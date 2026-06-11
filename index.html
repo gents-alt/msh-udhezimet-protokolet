@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Udhërrëfyesit dhe Protokollet Klinike — Kërko & Filtro | MSH</title>
+<style>
+  :root{
+    --bg:#0f1720; --panel:#16212e; --panel2:#1d2c3d; --line:#27384b;
+    --txt:#e8eef5; --muted:#93a4b8; --accent:#3aa0ff; --accent2:#1d6fd0;
+    --chip:#22344a; --chip-on:#1d6fd0; --shadow:0 6px 24px rgba(0,0,0,.35);
+    --pdf:#e0564a; --docx:#3a72c4;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:linear-gradient(180deg,#0c141d,#0f1720 240px);
+    color:var(--txt);
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+    line-height:1.5;
+  }
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 18px 60px}
+
+  header.hero{
+    padding:38px 18px 26px;text-align:center;
+    border-bottom:1px solid var(--line);
+    background:radial-gradient(800px 260px at 50% -40px,rgba(58,160,255,.12),transparent);
+  }
+  .hero .badge{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);background:rgba(58,160,255,.1);border:1px solid rgba(58,160,255,.3);
+    padding:5px 12px;border-radius:999px;margin-bottom:14px}
+  .hero h1{margin:0 0 8px;font-size:30px;font-weight:700}
+  .hero p{margin:0;color:var(--muted);font-size:15px}
+  .hero .src{margin-top:10px;font-size:13px}
+  .hero .src a{color:var(--accent);border-bottom:1px dotted var(--accent)}
+
+  .toolbar{position:sticky;top:0;z-index:20;padding-top:18px;margin-top:18px;
+    background:linear-gradient(180deg,var(--bg) 70%,transparent)}
+  .searchbox{position:relative}
+  .searchbox input{
+    width:100%;padding:15px 48px 15px 48px;font-size:16px;color:var(--txt);
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;outline:none;
+    box-shadow:var(--shadow);transition:border .15s,box-shadow .15s;
+  }
+  .searchbox input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(58,160,255,.18)}
+  .searchbox .ico{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted)}
+  .searchbox .clear{position:absolute;right:12px;top:50%;transform:translateY(-50%);
+    color:var(--muted);cursor:pointer;border:none;background:none;font-size:20px;display:none}
+
+  .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:16px 0 4px}
+  .filters .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;
+    margin-right:4px;align-self:center}
+  .chip{cursor:pointer;border:1px solid var(--line);background:var(--chip);color:var(--txt);
+    padding:7px 13px;border-radius:999px;font-size:13px;white-space:nowrap;
+    transition:.12s;user-select:none;display:inline-flex;align-items:center;gap:6px}
+  .chip:hover{border-color:var(--accent)}
+  .chip.on{background:var(--chip-on);border-color:var(--accent);color:#fff;font-weight:600}
+  .chip .n{font-size:11px;opacity:.7}
+
+  .row2{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin:14px 0 2px}
+  .years{display:flex;flex-wrap:wrap;gap:6px}
+  .yr{cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--muted);
+    padding:5px 11px;border-radius:8px;font-size:13px;transition:.12s}
+  .yr:hover{color:var(--txt);border-color:var(--accent)}
+  .yr.on{background:var(--accent2);color:#fff;border-color:var(--accent);font-weight:600}
+  .sortwrap{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+  select{background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:8px;
+    padding:6px 10px;font-size:13px;outline:none}
+
+  .count{color:var(--muted);font-size:13px;margin:18px 2px 12px}
+  .count b{color:var(--txt)}
+
+  .grid{display:grid;gap:12px}
+  .card{display:block;background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:16px 18px;transition:.14s;position:relative;overflow:hidden}
+  .card:hover{transform:translateY(-2px);border-color:var(--accent);
+    box-shadow:0 10px 28px rgba(0,0,0,.4);background:var(--panel2)}
+  .card .top{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+  .card h3{margin:0;font-size:16px;font-weight:600;line-height:1.35}
+  .card h3 mark{background:rgba(58,160,255,.32);color:#fff;border-radius:3px;padding:0 1px}
+  .card .meta{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .ftype{font-size:11px;font-weight:700;letter-spacing:.05em;padding:3px 8px;border-radius:6px;color:#fff}
+  .ftype.pdf{background:var(--pdf)} .ftype.docx{background:var(--docx)}
+  .date{font-size:13px;color:var(--muted)}
+  .date svg{vertical-align:-2px;margin-right:3px}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .tag{font-size:12px;color:#bcd3ea;background:rgba(58,160,255,.1);border:1px solid rgba(58,160,255,.22);
+    padding:3px 9px;border-radius:999px}
+  .tag.type{color:#ffd9a8;background:rgba(255,170,80,.1);border-color:rgba(255,170,80,.25)}
+  .open{font-size:13px;color:var(--accent);white-space:nowrap;align-self:center}
+  .open svg{vertical-align:-2px}
+
+  .empty{text-align:center;padding:60px 20px;color:var(--muted)}
+  .empty .big{font-size:40px;margin-bottom:10px}
+
+  footer{margin-top:40px;text-align:center;color:var(--muted);font-size:12px;
+    border-top:1px solid var(--line);padding-top:20px}
+
+  @media(max-width:560px){
+    .hero h1{font-size:23px}
+    .card .top{flex-direction:column}
+    .open{align-self:flex-start;margin-top:6px}
+  }
+</style>
+</head>
+<body>
+<header class="hero">
+  <span class="badge">Ministria e Shëndetësisë · Republika e Kosovës</span>
+  <h1>Udhërrëfyesit dhe Protokollet Klinike</h1>
+  <p>Kërko, filtro dhe hap dokumentet zyrtare — direkt te burimi.</p>
+  <div class="src">Burimi: <a href="https://msh.rks-gov.net/Documents/Index/273" target="_blank" rel="noopener">msh.rks-gov.net/Documents/Index/273</a></div>
+</header>
+
+<div class="wrap">
+  <div class="toolbar">
+    <div class="searchbox">
+      <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="q" type="text" placeholder="Kërko sipas titullit, temës ose vitit… (p.sh. diabet, HIV, COVID, lindja)" autocomplete="off" spellcheck="false">
+      <button class="clear" id="clear" title="Pastro">&times;</button>
+    </div>
+
+    <div class="filters" id="typeFilters">
+      <span class="label">Lloji</span>
+    </div>
+    <div class="filters" id="topicFilters">
+      <span class="label">Tema</span>
+    </div>
+
+    <div class="row2">
+      <div class="years" id="years"></div>
+      <div class="sortwrap">
+        <span>Rendit:</span>
+        <select id="sort">
+          <option value="date_desc">Më të rejat</option>
+          <option value="date_asc">Më të vjetrat</option>
+          <option value="title_asc">Titulli A→Z</option>
+          <option value="title_desc">Titulli Z→A</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="count" id="count"></div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" style="display:none">
+    <div class="big">🔍</div>
+    <div>Asnjë dokument nuk përputhet me kërkimin.</div>
+  </div>
+
+  <footer>
+    Faqe jozyrtare për kërkim — të dhënat janë marrë nga faqja zyrtare e MSH-së.<br>
+    Të gjitha dokumentet hapen direkt nga serveri i Ministrisë së Shëndetësisë.
+  </footer>
+</div>
+
+<script>
+const BASE = "https://msh.rks-gov.net";
+
+// ---- Raw data crawled from msh.rks-gov.net/Documents/Index/273 ----
+// [title, href, "dd.mm.yyyy"]
+const RAW = [
+["Udhërrëfyesi Klinik - Menaxhimi sindromik i rasteve me IST","/Documents/DownloadDocument?fileName=Udh%C3%ABr49587919.4567.pdf","10.04.2026"],
+["Udhërrëfyesi Klinik - Rreziku i mbidozimit ndaj alkoolit dhe drogave tjera","/Documents/DownloadDocument?fileName=Udh%C3%ABr49499898.2016.pdf","10.04.2026"],
+["Protokolli Klinik - Trajtimi farmakologjik i sëmundjeve pulmonare obstruktive kronike në tri nivelet e kujdesit shëndetësor","/Documents/DownloadDocument?fileName=Proto39686492.5766.pdf","14.01.2026"],
+["Protokolli Klinik - Menaxhimi në sëmundjet pulmonare obstruktive kronike në tri nivelet e kujdesit shëndetësor","/Documents/DownloadDocument?fileName=Proto39601580.885.pdf","14.01.2026"],
+["Protokolli Klinik - Diagnostikimi në sëmundjet pulmonare obstruktive kronike në tri nivelet e kujdesit shëndetësor","/Documents/DownloadDocument?fileName=Proto39493018.6268.pdf","14.01.2026"],
+["Udhërrëfyesi Klinik - Menaxhimi i infeksioneve të traktit urinar jo të komplikuar","/Documents/DownloadDocument?fileName=Udh%C3%ABr53622966.1413.pdf","17.11.2025"],
+["Udhërrëfyesi Klinik - Menaxhimi i diabetit në shtatëzani","/Documents/DownloadDocument?fileName=Udh%C3%ABr54988816.1039.pdf","15.08.2025"],
+["Udhërrëfyesi Klinik - Diagnostifikimi dhe menaxhimi në sëmundjet pulmonare obstruktive kronike në tri nivelet e kujdesit shëndetësor","/Documents/DownloadDocument?fileName=Udh%C3%ABr29659791.4402.pdf","15.08.2025"],
+["Udhërrëfyesi Klinik - Menaxhimi i komplikimeve të sëmundjes së sheqerit","/Documents/DownloadDocument?fileName=Udh%C3%ABr29479088.3318.pdf","15.08.2025"],
+["Udhërrëfyesi Klinik - Menaxhimi i osteoporozës","/Documents/DownloadDocument?fileName=Udh%C3%ABr29362649.6765.pdf","15.08.2025"],
+["Udhërrëfyesi Klinik - Kujdesi postnatal në Kujdesin Parësor Shëndetësor","/Documents/DownloadDocument?fileName=Udh%C3%ABr57612765.5235.pdf","06.08.2025"],
+["Udhërrëfyesi Klinik - Kujdesi antenatal në Kujdesin Parësor Shëndetësor","/Documents/DownloadDocument?fileName=Udh%C3%ABr57530326.5531.pdf","06.08.2025"],
+["Udhërrëfyesi Klinik - Menaxhimi i lindjes me prerje cezariane","/Documents/DownloadDocument?fileName=Udh%C3%ABr29592539.8186.pdf","16.07.2025"],
+["Udhërrëfyesi Klinik 'Menaxhimi i lindjes normale'","/Documents/DownloadDocument?fileName=Udh%C3%ABr55327542.6594.pdf","04.07.2025"],
+["Vendimi për aprovim të Udhërrëfyesit Klinik 'Menaxhimi i lindjes normale'","/Documents/DownloadDocument?fileName=Udh%C3%ABr55327565.227.pdf","04.07.2025"],
+["Protokolli Klinik 'Trajtimi i sëmundjes së sheqerit tip 2 me antidiabetikë oral te të rriturit'","/Documents/DownloadDocument?fileName=Proto51704725.9408.pdf","25.06.2025"],
+["Udhërrëfyesi Klinik 'Menaxhimi dhe trajtimi i rasteve të dhunës seksuale'","/Documents/DownloadDocument?fileName=Udh%C3%ABr51174009.4601.pdf","25.06.2025"],
+["Udhërrëfyesi Klinik 'Trajtimi i pacientëve me çrregullime obsesive kompulsive'","/Documents/DownloadDocument?fileName=Udh%C3%ABr51043611.8582.pdf","25.06.2025"],
+["Udhëzuesi për ruajtjen dhe arkivimin e dokumentacionit financiar","/Documents/DownloadDocument?fileName=Udh%C3%ABz54935460.5108.pdf","14.11.2024"],
+["Protokolli Klinik për Profilaksën e HIV-it Para Ekspozimit (PrEP)","/Documents/DownloadDocument?fileName=Proto54311162.4999.pdf","28.05.2024"],
+["Protokoll Klinik 'Trajtimi me preparate insulinike dhe jo insulinike injektuese i sëmundjes së sheqerit Tip 2 te të rriturit'","/Documents/DownloadDocument?fileName=Proto29322229.1642.pdf","28.05.2024"],
+["Udhëzuesi për Zbatimin e Programit Psikosocial me Aktivitete Okupuese për Trajtimin e Rasteve me Probleme të Shëndetit Mendor në Burgje","/Documents/DownloadDocument?fileName=Udh%C3%ABz53803906.5508.pdf","11.01.2024"],
+["Udhërrëfyesi Klinik për përdorimin e Azot Oksidulit (N2O-O2) si sedacion inhalator në praktikën e Stomatologjisë","/Documents/DownloadDocument?fileName=Udh%C3%ABr37256587.4168.pdf","21.12.2023"],
+["Udhëzuesi i Përdorimit të Antibiotikëve në Kujdesin Parësor Shëndetësor","/Documents/DownloadDocument?fileName=Udh%C3%ABz54734865.7678.pdf","22.08.2023"],
+["Udhërrëfyesi Klinik - Trajtimi i pacientëve me skizofreni","/Documents/DownloadDocument?fileName=Udh%C3%ABr38222824.9085.pdf","08.06.2023"],
+["Udhërrëfyesi Klinik - Çrregullimet e stresit post traumatik, traumat dhe çrregullimet e lidhura me traumën","/Documents/DownloadDocument?fileName=Udh%C3%ABr36634021.7658.pdf","08.06.2023"],
+["Plani i Veprimit për HIV","/Documents/DownloadDocument?fileName=Plani%20i%20Veprimit%20p%C3%ABr%20HIV51661248.4696.pdf","17.08.2023"],
+["PKK - Menaxhimi i preeklampsisë së rëndë","/Documents/DownloadDocument?fileName=PKK%20-%20Menaxhimi%20i%20preekplampsis%C3%AB%20s%C3%AB%20r%C3%ABnd%C3%AB%2047708410.0706.pdf","05.12.2022"],
+["PKK - Menaxhimi i hemorragjisë primare postpartale","/Documents/DownloadDocument?fileName=PKK%20-%20Menaxhimi%20i%20Hemorragjis%C3%AB%20Primare%20Postpartale47572428.9574.pdf","05.12.2022"],
+["PKK - Menaxhimi i astmës akute te të rriturit në KPSH","/Documents/DownloadDocument?fileName=PKK%20-%20Menaxhimi%20i%20astm%C3%ABs%20akute%20te%20t%C3%AB%20rriturit%20n%C3%AB%20KPSH47355058.4042.docx","05.12.2022"],
+["PKK - Menaxhimi i hipertensionit arterial","/Documents/DownloadDocument?fileName=PKK%20-%20Menaxhimi%20i%20hipertensionit%20arterial%2047213398.8634.pdf","05.12.2022"],
+["PKK - Menaxhimi dhe trajtimi i COVID-19 në KPSH","/Documents/DownloadDocument?fileName=PKK%20-Menaxhimi%20dhe%20trajtimi%20i%20COVID-19%20ne%20KPSh46968817.6726.pdf","01.12.2021"],
+["Parandalimi dhe menaxhimi i hemorragjisë primare post partale","/Documents/DownloadDocument?fileName=Parandalimi%20dhe%20menaxhimi%20i%20hemorragjis%C3%AB%20primare%20post%20partale%2046787584.2312.pdf","01.01.2018"],
+["Skrinimi dhe trajtimi i lezioneve prekanceroze të qafës së mitrës","/Documents/DownloadDocument?fileName=Skrinimi%20dhe%20trajtimi%20i%20lezioneve%20prekanceroze%20t%C3%AB%20qaf%C3%ABs%20s%C3%AB%20mitr%C3%ABs%2046495245.562.pdf","01.01.2018"],
+["Udhërrëfyesi për shërbime të HIV testimit","/Documents/DownloadDocument?fileName=Udh%C3%ABrr%C3%ABfyesi%20p%C3%ABr%20sh%C3%ABrbime%20t%C3%AB%20HIV%20testimit46415510.6741.pdf","01.01.2018"],
+["Udhërrëfyesi i Transportit Neonatal","/Documents/DownloadDocument?fileName=Udh%C3%ABrr%C3%ABfyesi%20i%20Transportit%20Neonatal%2046259753.2014.pdf","01.01.2018"],
+["Menaxhimi i hipertensionit arterial","/Documents/DownloadDocument?fileName=Menaxhimi%20i%20hipertensionit%20arterial46146825.7972.pdf","01.01.2019"],
+["Menaxhimi i astmës","/Documents/DownloadDocument?fileName=Menaxhimi%20i%20Astm%C3%ABs%2046019544.7593.pdf","01.01.2019"],
+["Menaxhimi jo-farmakologjik i sëmundjes së sheqerit","/Documents/DownloadDocument?fileName=Menaxhimi%20jo-farmakologjik%20i%20S%C3%ABmundjes%20s%C3%AB%20Sheqerit%2045905409.0477.pdf","01.01.2019"],
+["Menaxhimi farmakologjik i sëmundjes së sheqerit Tip 2 tek të rriturit","/Documents/DownloadDocument?fileName=Menaxhimi%20farmakologjik%20i%20s%C3%ABmundjes%20s%C3%AB%20sheqerit%20Tip%202%20tek%20t%C3%AB%20rriturit45812721.4552.pdf","01.08.2020"],
+["Menaxhimi i gjakderdhjeve akute të traktit të sipërm gastrointestinal te të rriturit","/Documents/DownloadDocument?fileName=Menaxhimi%20i%20gjakderdhjeve%20akute%20t%C3%AB%20traktit%20t%C3%AB%20sip%C3%ABrm%20gastrointestinal%20te%20t%C3%AB%20rriturit%2045663126.2898.pdf","01.08.2020"],
+["Diagnoza dhe menaxhimi i epilepsisë","/Documents/DownloadDocument?fileName=Diagnoza%20dhe%20menaxhimi%20i%20Epilepsis%C3%AB%2045572941.1968.pdf","13.05.2020"],
+["Përdorimi i Metadonit për trajtim mbajtës zëvendësues me opioide","/Documents/DownloadDocument?fileName=P%C3%ABrdorimi%20i%20Metadonit%20p%C3%ABr%20trajtim%20mbajt%C3%ABs%20z%C3%ABvend%C3%ABsues%20me%20opioide%2045370002.8259.pdf","01.12.2020"],
+["Trajtimi dhe mbikëqyrja e rastit me HIV-AIDS","/Documents/DownloadDocument?fileName=Trajtimi%20dhe%20mbik%C3%ABqyrja%20e%20rastit%20me%20HIV-AIDS41606200.4204.pdf","01.12.2020"],
+["Trajtimi me dializë i të rriturve","/Documents/DownloadDocument?fileName=Trajtimi%20me%20dializ%C3%AB%20i%20t%C3%AB%20rriturve41487085.8149.pdf","01.12.2020"],
+["Trajtimi i sëmundjes iskemike trunore","/Documents/DownloadDocument?fileName=Trajtimi%20i%20s%C3%ABmundjes%20iskemike%20trunore%2041404938.7077.pdf","01.01.2020"],
+["Kujdesi dhe trajtimi i personave të diagnostikuar me Hepatit C","/Documents/DownloadDocument?fileName=Kujdesi%20dhe%20trajtimi%20i%20personave%20t%C3%AB%20diagnostikuar%20me%20Hepatit%20C%2041266873.7919.pdf","01.01.2020"],
+["Menaxhimi dhe trajtimi i COVID-19","/Documents/DownloadDocument?fileName=Menaxhimi%20dhe%20trajtimi%20i%20COVID-19%2041125761.4307.pdf","01.01.2020"],
+["Diagnostikimi dhe menaxhimi i tuberkulozit ekstra-pulmonar","/Documents/DownloadDocument?fileName=Diagnostikimi%20dhe%20menaxhimi%20i%20tuberkulozit%20ekstra-pulmonar%2040718461.6423.pdf","01.01.2020"],
+["Menaxhimi i infeksionit latent të tuberkulozit","/Documents/DownloadDocument?fileName=Menaxhimi%20i%20infeksionit%20latent%20t%C3%AB%20tuberkulozit%20%2040519089.3729.pdf","01.01.2020"],
+["Trajtimi i sjelljeve suicidale","/Documents/DownloadDocument?fileName=Trajtimi%20i%20Sjelljeve%20Suicidale%2040374888.0385.pdf","05.12.2022"],
+["Trajtimi i alkoolit dhe drogave tjera","/Documents/DownloadDocument?fileName=Trajtimi%20i%20alkoolit%20dhe%20drogave%20tjera%2040248446.1821.pdf","05.12.2022"],
+["Trajtimi i depresionit","/Documents/DownloadDocument?fileName=Trajtimi%20i%20Depresionit40068690.6739.pdf","05.12.2022"],
+["Trajtimi i ankthit","/Documents/DownloadDocument?fileName=Trajtimi%20i%20Ankthit39857639.78.pdf","05.12.2022"],
+["Udhëzues për trajtim me plazmë konvalescente të pacientëve me COVID-19 si terapi mbështetëse","/Documents/DownloadDocument?fileName=20.UDH%C3%8BZUES%20P%C3%8BR%20TRAJTIM%20ME%20PLAZM%C3%8B%20KONVALESCENTE%20T%C3%8B%20PACIENT%C3%8BVE%20ME%20COVID-19%20SI%20TERAPI%20MB%C3%8BSHTET%C3%8BSE40962752.0898.pdf","08.01.2021"],
+["UK - Menaxhimi dhe trajtimi i COVID-19","/Documents/DownloadDocument?fileName=UK-%20Menaxhimi%20dhe%20trajtimi%20i%20COVID-1939778606.6989.pdf","01.08.2021"],
+["ENG - Udhëzuesi për 'Intervenime Promovuese dhe Parandaluese në Fushën e Shëndetit Mendor te Adoleshentët'","/Documents/DownloadDocument?fileName=ENG-Udh%C3%ABzuesi%20p%C3%ABr%20%E2%80%9CIntervenime%20Promovuese%20dhe%20Parandaluese%20n%C3%AB%20Fush%C3%ABn%20e%20Sh%C3%ABndetit%20Mendor%20te%20Adoleshent%C3%ABt%E2%80%9D39181707.2348.pdf","04.11.2022"],
+["SRB - Udhëzuesi për 'Intervenime Promovuese dhe Parandaluese në Fushën e Shëndetit Mendor te Adoleshentët'","/Documents/DownloadDocument?fileName=SRB-%20Udh%C3%ABzuesi%20p%C3%ABr%20%E2%80%9CIntervenime%20Promovuese%20dhe%20Parandaluese%20n%C3%AB%20Fush%C3%ABn%20e%20Sh%C3%ABndetit%20Mendor%20te%20Adoleshent%C3%ABt%E2%80%9D39114049.0635.pdf","04.11.2022"],
+["SHQ - Udhëzuesi për 'Intervenime Promovuese dhe Parandaluese në Fushën e Shëndetit Mendor te Adoleshentët'","/Documents/DownloadDocument?fileName=SHQ-Udh%C3%ABzuesi%20p%C3%ABr%20%E2%80%9CIntervenime%20Promovuese%20dhe%20Parandaluese%20n%C3%AB%20Fush%C3%ABn%20e%20Sh%C3%ABndetit%20Mendor%20te%20Adoleshent%C3%ABt%E2%80%9D39036981.9602.pdf","04.11.2022"],
+["Udhërrëfyesi – Dhënia e Gjakut (DHBGJ)","/Documents/DownloadDocument?fileName=Udherrefyesi%20%E2%80%93%20DHBGJ38901460.2098.docx","04.11.2022"],
+["UK - Mbikëqyrje në Rast për HIV (Konsultime Publike)","/Documents/DownloadDocument?fileName=UK%20Mbik%C3%ABqyrje%20n%C3%AB%20Rast%20p%C3%ABr%20HIV%20(Konsultime%20Publike)38582869.1232.docx","04.11.2022"],
+];
+
+// ---- Derive document type ----
+function detectType(t){
+  const s = t.toLowerCase();
+  if(s.startsWith("protokoll") || s.startsWith("pkk")) return "Protokoll Klinik";
+  if(s.startsWith("udhëzues") || s.includes("udhëzuesi") || s.includes("udhëzues ")) return "Udhëzues";
+  if(s.startsWith("plani")) return "Plan Veprimi";
+  if(s.startsWith("vendimi")) return "Vendim";
+  if(s.startsWith("udhërrëfyes") || s.startsWith("uk ") || s.startsWith("uk-")) return "Udhërrëfyes Klinik";
+  return "Dokument";
+}
+
+// ---- Derive basic topic tags by keyword ----
+const TOPIC_RULES = [
+  ["HIV / AIDS",        ["hiv","aids","prep","ist"]],
+  ["COVID-19",          ["covid"]],
+  ["Diabet",            ["sheqer","diabet","insulin","antidiabet"]],
+  ["Tuberkuloz",        ["tuberkuloz"]],
+  ["Hepatit",           ["hepatit"]],
+  ["Shëndeti Mendor",   ["depresion","ankth","suicid","skizofreni","traumat","stresit","obsesive","mendor","psikosocial"]],
+  ["Substanca & Varësi",["alkool","drog","metadon","opioide","mbidozim"]],
+  ["Obstetrikë",        ["lindje","shtatëzani","postnatal","antenatal","cezariane","hemorragji","postpartale","preeklamps"]],
+  ["Gjinekologji",      ["mitrës","prekanceroze","lezioneve"]],
+  ["Pulmologji",        ["pulmonare","astm","obstruktive"]],
+  ["Kardiologji",       ["hipertension","iskemike"]],
+  ["Nefrologji",        ["dializ","urinar"]],
+  ["Gastroenterologji", ["gastrointestinal","gjakderdhje"]],
+  ["Neurologji",        ["epilep","trunore"]],
+  ["Osteoporozë",       ["osteoporoz"]],
+  ["Stomatologji",      ["stomatolog","azot oksidul","sedacion"]],
+  ["Neonatologji",      ["neonatal"]],
+  ["Antibiotikë",       ["antibiotik"]],
+  ["Transfuzion gjaku", ["dhbgj","gjakut","transfuz"]],
+  ["Dhunë seksuale",    ["dhunës seksuale"]],
+  ["Administrativ",     ["arkivim","dokumentacion financiar","vendim"]],
+];
+function detectTopics(t){
+  const s = t.toLowerCase();
+  const out = [];
+  for(const [name,kws] of TOPIC_RULES){
+    if(kws.some(k=>s.includes(k))) out.push(name);
+  }
+  return out;
+}
+
+// ---- Build the document objects ----
+const DOCS = RAW.map(([title,href,date],i)=>{
+  const [d,m,y] = date.split(".");
+  const ext = href.toLowerCase().endsWith(".docx") ? "docx" : "pdf";
+  return {
+    id:i, title, url:BASE+href, date,
+    sortKey: +(y+m+d),
+    year: y,
+    ext,
+    type: detectType(title),
+    topics: detectTopics(title),
+    search: (title+" "+date+" "+detectTopics(title).join(" ")).toLowerCase()
+            .normalize("NFD").replace(/[̀-ͯ]/g,"")
+  };
+});
+
+// ---- State ----
+const state = { q:"", type:null, topics:new Set(), year:null, sort:"date_desc" };
+
+// ---- Build filter chips ----
+const typeCounts={}, topicCounts={}, yearCounts={};
+DOCS.forEach(d=>{
+  typeCounts[d.type]=(typeCounts[d.type]||0)+1;
+  d.topics.forEach(t=>topicCounts[t]=(topicCounts[t]||0)+1);
+  yearCounts[d.year]=(yearCounts[d.year]||0)+1;
+});
+
+const typeWrap = document.getElementById("typeFilters");
+Object.entries(typeCounts).sort((a,b)=>b[1]-a[1]).forEach(([name,n])=>{
+  const c=document.createElement("div");
+  c.className="chip"; c.innerHTML=`${name} <span class="n">${n}</span>`;
+  c.onclick=()=>{ state.type = state.type===name?null:name;
+    [...typeWrap.querySelectorAll(".chip")].forEach(x=>x.classList.toggle("on",x===c&&state.type===name));
+    render(); };
+  typeWrap.appendChild(c);
+});
+
+const topicWrap = document.getElementById("topicFilters");
+Object.entries(topicCounts).sort((a,b)=>b[1]-a[1]).forEach(([name,n])=>{
+  const c=document.createElement("div");
+  c.className="chip"; c.dataset.name=name; c.innerHTML=`${name} <span class="n">${n}</span>`;
+  c.onclick=()=>{ state.topics.has(name)?state.topics.delete(name):state.topics.add(name);
+    c.classList.toggle("on",state.topics.has(name)); render(); };
+  topicWrap.appendChild(c);
+});
+
+const yearWrap = document.getElementById("years");
+Object.keys(yearCounts).sort((a,b)=>b-a).forEach(y=>{
+  const c=document.createElement("div");
+  c.className="yr"; c.innerHTML=`${y} <span class="n">${yearCounts[y]}</span>`;
+  c.onclick=()=>{ state.year = state.year===y?null:y;
+    [...yearWrap.querySelectorAll(".yr")].forEach(x=>x.classList.toggle("on",x===c&&state.year===y));
+    render(); };
+  yearWrap.appendChild(c);
+});
+
+// ---- Search input ----
+const qEl = document.getElementById("q");
+const clearEl = document.getElementById("clear");
+qEl.addEventListener("input",()=>{
+  state.q = qEl.value;
+  clearEl.style.display = qEl.value ? "block":"none";
+  render();
+});
+clearEl.onclick=()=>{ qEl.value=""; state.q=""; clearEl.style.display="none"; qEl.focus(); render(); };
+document.getElementById("sort").addEventListener("change",e=>{ state.sort=e.target.value; render(); });
+
+// ---- Highlight matches ----
+function esc(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+function highlight(title, q){
+  if(!q) return esc(title);
+  const norm = s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+  const nt = norm(title), nq = norm(q.trim());
+  if(!nq) return esc(title);
+  let out="", i=0;
+  while(i<title.length){
+    const idx = nt.indexOf(nq, i);
+    if(idx<0){ out+=esc(title.slice(i)); break; }
+    out+=esc(title.slice(i,idx))+"<mark>"+esc(title.slice(idx,idx+nq.length))+"</mark>";
+    i=idx+nq.length;
+  }
+  return out;
+}
+
+const calIco='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>';
+const openIco='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>';
+
+// ---- Render ----
+function render(){
+  const tokens = state.q.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().trim().split(/\s+/).filter(Boolean);
+  let list = DOCS.filter(d=>{
+    if(state.type && d.type!==state.type) return false;
+    if(state.year && d.year!==state.year) return false;
+    if(state.topics.size && ![...state.topics].every(t=>d.topics.includes(t))) return false;
+    if(tokens.length && !tokens.every(tk=>d.search.includes(tk))) return false;
+    return true;
+  });
+
+  const s=state.sort;
+  list.sort((a,b)=>{
+    if(s==="date_desc") return b.sortKey-a.sortKey;
+    if(s==="date_asc")  return a.sortKey-b.sortKey;
+    if(s==="title_asc") return a.title.localeCompare(b.title,"sq");
+    if(s==="title_desc")return b.title.localeCompare(a.title,"sq");
+  });
+
+  const grid=document.getElementById("grid");
+  const empty=document.getElementById("empty");
+  const count=document.getElementById("count");
+  count.innerHTML = `Po shfaqen <b>${list.length}</b> nga <b>${DOCS.length}</b> dokumente`;
+
+  if(!list.length){ grid.innerHTML=""; empty.style.display="block"; return; }
+  empty.style.display="none";
+
+  grid.innerHTML = list.map(d=>`
+    <a class="card" href="${d.url}" target="_blank" rel="noopener" title="Hap dokumentin">
+      <div class="top">
+        <h3>${highlight(d.title, state.q)}</h3>
+        <span class="open">Hap ${openIco}</span>
+      </div>
+      <div class="meta">
+        <span class="ftype ${d.ext}">${d.ext.toUpperCase()}</span>
+        <span class="date">${calIco} ${d.date}</span>
+      </div>
+      <div class="tags">
+        <span class="tag type">${d.type}</span>
+        ${d.topics.map(t=>`<span class="tag">${t}</span>`).join("")}
+      </div>
+    </a>`).join("");
+}
+
+render();
+</script>
+</body>
+</html>
