@@ -1,145 +1,246 @@
 <!DOCTYPE html>
-<html lang="sq">
+<html lang="sq" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gjurmues i Udhërrëfyesve dhe Protokolleve Klinike</title>
+<script>
+(function(){try{var t=localStorage.getItem("msh_theme");
+if(!t)t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches)?"light":"dark";
+document.documentElement.setAttribute("data-theme",t);}catch(e){}})();
+</script>
 <style>
-  :root{
-    --bg:#0f1720; --panel:#16212e; --panel2:#1d2c3d; --line:#27384b;
-    --txt:#e8eef5; --muted:#93a4b8; --accent:#3aa0ff; --accent2:#1d6fd0;
-    --chip:#22344a; --chip-on:#1d6fd0; --shadow:0 6px 24px rgba(0,0,0,.35);
-    --pdf:#e0564a; --docx:#3a72c4;
+  [data-theme="dark"]{
+    --bg:#0d1117; --surface:#161b22; --surface-2:#1c232c; --surface-3:#222b35;
+    --border:#2a323c; --border-strong:#3a4654;
+    --text:#e6edf3; --muted:#8b98a5; --faint:#6a7682;
+    --primary:#3b82f6; --primary-hover:#2f6fe0; --on-primary:#ffffff;
+    --chip-bg:#1c232c; --chip-text:#cdd9e5; --chip-on:#3b82f6; --chip-on-text:#fff;
+    --tag-bg:#15233a; --tag-text:#9ec1f0; --tag-border:#274062;
+    --type-bg:#2a2113; --type-text:#e0b878; --type-border:#473820;
+    --mark-bg:#1d4ed8; --mark-text:#fff;
+    --shadow:0 1px 2px rgba(0,0,0,.4); --shadow-lg:0 8px 30px rgba(0,0,0,.5);
+    --pdf:#d2463a; --docx:#2f6fc4; --ok:#3fb950; --err:#e5534b; --added:#a371f7;
+    --overlay:rgba(2,6,12,.66);
+  }
+  [data-theme="light"]{
+    --bg:#eef1f5; --surface:#ffffff; --surface-2:#f4f6f9; --surface-3:#eaeef3;
+    --border:#d8dee6; --border-strong:#c2cbd6;
+    --text:#1a2330; --muted:#5a6776; --faint:#8a96a3;
+    --primary:#1f5fc7; --primary-hover:#184fa8; --on-primary:#ffffff;
+    --chip-bg:#eef1f5; --chip-text:#37434f; --chip-on:#1f5fc7; --chip-on-text:#fff;
+    --tag-bg:#e9f1fc; --tag-text:#1f5fc7; --tag-border:#cadcf6;
+    --type-bg:#fbf3e2; --type-text:#92611a; --type-border:#ecddbb;
+    --mark-bg:#1f5fc7; --mark-text:#fff;
+    --shadow:0 1px 2px rgba(20,30,45,.08); --shadow-lg:0 12px 34px rgba(20,30,45,.16);
+    --pdf:#cf3b2e; --docx:#2563b8; --ok:#1a7f37; --err:#cf222e; --added:#8250df;
+    --overlay:rgba(20,28,40,.45);
   }
   *{box-sizing:border-box}
+  [hidden]{display:none!important}
   html,body{margin:0;padding:0}
   body{
-    background:linear-gradient(180deg,#0c141d,#0f1720 240px);
-    color:var(--txt);
-    font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
-    line-height:1.5;
+    background:var(--bg); color:var(--text);
+    font-family:"Inter","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+    line-height:1.5; font-size:15px;
+    -webkit-font-smoothing:antialiased;
   }
   a{color:inherit;text-decoration:none}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 18px 60px}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 20px 70px}
 
-  header.hero{
-    padding:38px 18px 26px;text-align:center;
-    border-bottom:1px solid var(--line);
-    background:radial-gradient(800px 260px at 50% -40px,rgba(58,160,255,.12),transparent);
-  }
-  .hero h1{margin:0 0 8px;font-size:30px;font-weight:700}
-  .hero p{margin:0;color:var(--muted);font-size:15px}
-  .hero .src{margin-top:10px;font-size:13px}
-  .hero .src a{color:var(--accent);border-bottom:1px dotted var(--accent)}
+  /* ---------- Top bar ---------- */
+  .topbar{border-bottom:1px solid var(--border);background:var(--surface);
+    position:relative;z-index:10}
+  .topbar-inner{max-width:1200px;margin:0 auto;padding:18px 20px;
+    display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:14px;min-width:0}
+  .brand .logo{width:42px;height:42px;flex-shrink:0;background:var(--primary);
+    display:flex;align-items:center;justify-content:center}
+  .brand .logo svg{width:24px;height:24px;color:#fff}
+  .brand h1{margin:0;font-size:19px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
+  .brand p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+  .actions{display:flex;align-items:center;gap:10px}
 
-  .toolbar{position:sticky;top:0;z-index:20;padding-top:18px;margin-top:18px;
-    background:linear-gradient(180deg,var(--bg) 70%,transparent)}
+  .btn{font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;
+    border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text);
+    padding:9px 15px;display:inline-flex;align-items:center;gap:8px;transition:.12s;border-radius:0}
+  .btn:hover{border-color:var(--primary)}
+  .btn.primary{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+  .btn.primary:hover{background:var(--primary-hover);border-color:var(--primary-hover)}
+  .btn.ghost{background:transparent}
+  .btn.danger{background:transparent;border-color:var(--border-strong);color:var(--err)}
+  .btn.danger:hover{border-color:var(--err)}
+  .btn.icon{padding:9px;width:40px;justify-content:center}
+  .btn.sm{padding:6px 11px;font-size:13px}
+
+  .srcband{max-width:1200px;margin:0 auto;padding:10px 20px;font-size:12.5px;color:var(--muted);
+    border-bottom:1px solid var(--border)}
+  .srcband a{color:var(--primary);font-weight:600}
+
+  /* ---------- Toolbar ---------- */
+  .toolbar{position:sticky;top:0;z-index:8;padding-top:20px;margin-top:4px;
+    background:linear-gradient(180deg,var(--bg) 78%,transparent)}
   .searchbox{position:relative}
-  .searchbox input{
-    width:100%;padding:15px 48px 15px 48px;font-size:16px;color:var(--txt);
-    background:var(--panel);border:1px solid var(--line);border-radius:14px;outline:none;
-    box-shadow:var(--shadow);transition:border .15s,box-shadow .15s;
-  }
-  .searchbox input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(58,160,255,.18)}
-  .searchbox .ico{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted)}
-  .searchbox .clear{position:absolute;right:12px;top:50%;transform:translateY(-50%);
-    color:var(--muted);cursor:pointer;border:none;background:none;font-size:20px;display:none}
+  .searchbox input{width:100%;padding:14px 46px;font-size:15px;color:var(--text);
+    background:var(--surface);border:1px solid var(--border-strong);outline:none;border-radius:0;
+    transition:.12s;box-shadow:var(--shadow)}
+  .searchbox input:focus{border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 22%,transparent)}
+  .searchbox .ico{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--faint)}
+  .searchbox .clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);
+    color:var(--muted);cursor:pointer;border:none;background:none;font-size:22px;line-height:1;display:none}
 
   .row2{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin:14px 0 2px}
-  .years{display:flex;flex-wrap:wrap;gap:6px}
-  .yr{cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--muted);
-    padding:5px 11px;border-radius:8px;font-size:13px;transition:.12s}
-  .yr:hover{color:var(--txt);border-color:var(--accent)}
-  .yr.on{background:var(--accent2);color:#fff;border-color:var(--accent);font-weight:600}
-  .yr .n{font-size:11px;opacity:.7}
+  .years{display:flex;flex-wrap:wrap;gap:7px}
+  .yr{cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--muted);
+    padding:6px 12px;font-size:13px;font-family:inherit;transition:.12s;border-radius:0}
+  .yr:hover{color:var(--text);border-color:var(--primary)}
+  .yr.on{background:var(--primary);color:var(--on-primary);border-color:var(--primary);font-weight:600}
+  .yr .n{font-size:11px;opacity:.7;margin-left:2px}
   .sortwrap{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
-  select{background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:8px;
-    padding:6px 10px;font-size:13px;outline:none}
+  select{background:var(--surface);color:var(--text);border:1px solid var(--border-strong);
+    padding:7px 11px;font-size:13px;outline:none;border-radius:0;font-family:inherit}
+  select:focus{border-color:var(--primary)}
 
-  /* Two-column layout: filters in LEFT sidebar, results on the right */
-  .layout{display:flex;gap:24px;align-items:flex-start;margin-top:14px}
-  .sidebar{width:255px;flex-shrink:0;position:sticky;top:132px;
-    max-height:calc(100vh - 152px);overflow-y:auto;padding-right:2px}
+  /* ---------- Layout ---------- */
+  .layout{display:flex;gap:26px;align-items:flex-start;margin-top:16px}
+  .sidebar{width:262px;flex-shrink:0;position:sticky;top:128px;
+    max-height:calc(100vh - 150px);overflow-y:auto;padding-right:2px}
   .main{flex:1;min-width:0}
   .sidebar::-webkit-scrollbar{width:8px}
-  .sidebar::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+  .sidebar::-webkit-scrollbar-thumb{background:var(--border-strong)}
 
-  .fbox{background:var(--panel);border:1px solid var(--line);border-radius:14px;
-    padding:14px;margin:0 0 14px}
-  .fbox .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;
-    margin:0 0 10px;display:flex;justify-content:space-between;align-items:center}
-  .fbox .label .reset{cursor:pointer;color:var(--accent);text-transform:none;letter-spacing:0;
-    font-size:11px;display:none}
+  .fbox{background:var(--surface);border:1px solid var(--border);padding:16px;margin:0 0 14px}
+  .fbox .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;
+    font-weight:700;margin:0 0 12px;display:flex;justify-content:space-between;align-items:center}
+  .fbox .label .reset{cursor:pointer;color:var(--primary);text-transform:none;letter-spacing:0;
+    font-size:11px;font-weight:600;display:none}
   .chips{display:flex;flex-wrap:wrap;gap:8px}
-  .chip{cursor:pointer;border:1px solid var(--line);background:var(--chip);color:var(--txt);
-    padding:7px 12px;border-radius:999px;font-size:13px;white-space:nowrap;
-    transition:.12s;user-select:none;display:inline-flex;align-items:center;gap:6px}
-  .chip:hover{border-color:var(--accent)}
-  .chip.on{background:var(--chip-on);border-color:var(--accent);color:#fff;font-weight:600}
+  .chip{cursor:pointer;border:1px solid var(--border);background:var(--chip-bg);color:var(--chip-text);
+    padding:7px 12px;font-size:13px;white-space:nowrap;transition:.12s;font-family:inherit;
+    display:inline-flex;align-items:center;gap:6px;border-radius:0}
+  .chip:hover{border-color:var(--primary)}
+  .chip.on{background:var(--chip-on);border-color:var(--chip-on);color:var(--chip-on-text);font-weight:600}
   .chip .n{font-size:11px;opacity:.7}
 
-  .specsearch{position:relative;margin-bottom:10px}
-  .specsearch input{width:100%;padding:9px 12px 9px 32px;font-size:13px;color:var(--txt);
-    background:var(--bg);border:1px solid var(--line);border-radius:9px;outline:none}
-  .specsearch input:focus{border-color:var(--accent)}
-  .specsearch svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted)}
-  .more{margin-top:10px;width:100%;cursor:pointer;background:none;border:1px dashed var(--line);
-    color:var(--accent);border-radius:9px;padding:7px;font-size:12px;transition:.12s}
-  .more:hover{border-color:var(--accent);background:rgba(58,160,255,.06)}
+  .specsearch{position:relative;margin-bottom:11px}
+  .specsearch input{width:100%;padding:8px 11px 8px 31px;font-size:13px;color:var(--text);
+    background:var(--surface-2);border:1px solid var(--border);outline:none;border-radius:0;font-family:inherit}
+  .specsearch input:focus{border-color:var(--primary)}
+  .specsearch svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--faint)}
+  .more{margin-top:11px;width:100%;cursor:pointer;background:transparent;border:1px solid var(--border);
+    color:var(--primary);padding:7px;font-size:12px;font-weight:600;font-family:inherit;transition:.12s;border-radius:0}
+  .more:hover{border-color:var(--primary)}
   .nomatch{color:var(--muted);font-size:12px;padding:4px 2px}
 
   .count{color:var(--muted);font-size:13px;margin:2px 2px 14px}
-  .count b{color:var(--txt)}
+  .count b{color:var(--text)}
 
+  /* ---------- Cards ---------- */
   .grid{display:grid;gap:12px}
-  .card{display:block;background:var(--panel);border:1px solid var(--line);border-radius:14px;
-    padding:16px 18px;transition:.14s;position:relative;overflow:hidden}
-  .card:hover{transform:translateY(-2px);border-color:var(--accent);
-    box-shadow:0 10px 28px rgba(0,0,0,.4);background:var(--panel2)}
-  .card .top{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
-  .card h3{margin:0;font-size:16px;font-weight:600;line-height:1.35}
-  .card h3 mark{background:rgba(58,160,255,.32);color:#fff;border-radius:3px;padding:0 1px}
-  .card .meta{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
-  .ftype{font-size:11px;font-weight:700;letter-spacing:.05em;padding:3px 8px;border-radius:6px;color:#fff}
+  .card{display:block;background:var(--surface);border:1px solid var(--border);padding:16px 18px;
+    transition:.13s;position:relative;border-radius:0;border-left:3px solid var(--border)}
+  .card:hover{border-color:var(--border-strong);border-left-color:var(--primary);
+    box-shadow:var(--shadow-lg);background:var(--surface)}
+  .card.is-admin{border-left-color:var(--added)}
+  .card-top{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+  .card h3{margin:0;font-size:15.5px;font-weight:600;line-height:1.4;letter-spacing:-.005em}
+  .card h3 mark{background:var(--mark-bg);color:var(--mark-text);padding:0 2px;border-radius:0}
+  .open{color:var(--faint);flex-shrink:0;transition:.12s}
+  .card:hover .open{color:var(--primary)}
+  .meta{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .ftype{font-size:10.5px;font-weight:700;letter-spacing:.05em;padding:3px 7px;color:#fff;border-radius:0}
   .ftype.pdf{background:var(--pdf)} .ftype.docx{background:var(--docx)}
-  .date{font-size:13px;color:var(--muted)}
-  .date svg{vertical-align:-2px;margin-right:3px}
+  .date{font-size:12.5px;color:var(--muted);display:inline-flex;align-items:center;gap:4px}
+  .addedflag{font-size:10.5px;font-weight:700;letter-spacing:.04em;color:var(--added);
+    border:1px solid var(--added);padding:2px 7px}
   .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
-  .tag{font-size:12px;color:#bcd3ea;background:rgba(58,160,255,.1);border:1px solid rgba(58,160,255,.22);
-    padding:3px 9px;border-radius:999px}
-  .tag.type{color:#ffd9a8;background:rgba(255,170,80,.1);border-color:rgba(255,170,80,.25)}
-  .open{font-size:13px;color:var(--accent);white-space:nowrap;align-self:center}
-  .open svg{vertical-align:-2px}
+  .tag{font-size:12px;color:var(--tag-text);background:var(--tag-bg);border:1px solid var(--tag-border);
+    padding:3px 9px;border-radius:0}
+  .tag.type{color:var(--type-text);background:var(--type-bg);border-color:var(--type-border);font-weight:600}
 
-  .empty{text-align:center;padding:60px 20px;color:var(--muted)}
-  .empty .big{font-size:40px;margin-bottom:10px}
+  .empty{text-align:center;padding:64px 20px;color:var(--muted)}
+  .empty .big{font-size:38px;margin-bottom:10px}
 
-  footer{margin-top:40px;text-align:center;color:var(--muted);font-size:12px;
-    border-top:1px solid var(--line);padding-top:20px}
+  footer{margin-top:44px;text-align:center;color:var(--faint);font-size:12px;
+    border-top:1px solid var(--border);padding-top:22px}
 
-  @media(max-width:820px){
+  /* ---------- Admin modal ---------- */
+  .overlay{position:fixed;inset:0;background:var(--overlay);z-index:100;
+    display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
+  .overlay[hidden]{display:none}
+  .modal{background:var(--surface);border:1px solid var(--border-strong);width:min(720px,100%);
+    box-shadow:var(--shadow-lg);border-radius:0}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;
+    padding:18px 22px;border-bottom:1px solid var(--border)}
+  .modal-head h2{margin:0;font-size:18px;font-weight:700}
+  .modal-head .sub{font-size:12.5px;color:var(--muted);font-weight:400;margin-top:2px}
+  .modal-body{padding:22px}
+  .adminform{display:flex;flex-direction:column;gap:14px}
+  .adminform label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--text)}
+  .adminform input,.adminform select,.adminform textarea{
+    font-family:inherit;font-size:14px;font-weight:400;color:var(--text);
+    background:var(--surface-2);border:1px solid var(--border-strong);padding:10px 12px;outline:none;border-radius:0}
+  .adminform input:focus,.adminform select:focus,.adminform textarea:focus{border-color:var(--primary)}
+  .adminform .hint{font-size:11.5px;font-weight:400;color:var(--faint)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .spec-suggest{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+  .sugg{cursor:pointer;font-family:inherit;font-size:12px;color:var(--muted);
+    background:transparent;border:1px dashed var(--border-strong);padding:4px 9px;border-radius:0;transition:.12s}
+  .sugg:hover{color:var(--primary);border-color:var(--primary)}
+  .formbtns{display:flex;align-items:center;gap:14px;margin-top:4px}
+  .msg{font-size:13px;font-weight:600}
+  .msg.ok{color:var(--ok)} .msg.err{color:var(--err)}
+
+  .admin-list-wrap{margin-top:26px;border-top:1px solid var(--border);padding-top:18px}
+  .admin-list-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .admin-list-head h3{margin:0;font-size:15px;font-weight:700}
+  .admin-list{display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto}
+  .admin-item{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    border:1px solid var(--border);background:var(--surface-2);padding:10px 13px}
+  .ai-title{font-size:13.5px;font-weight:600}
+  .ai-meta{font-size:12px;color:var(--muted);margin-top:2px}
+  .admin-empty{font-size:13px;color:var(--muted);padding:8px 2px}
+  .ioarea{width:100%;min-height:120px;margin-top:12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;resize:vertical}
+  .io-actions{display:flex;gap:10px;margin-top:10px}
+
+  @media(max-width:860px){
     .layout{flex-direction:column}
     .sidebar{width:auto;position:static;max-height:none}
   }
   @media(max-width:560px){
-    .hero h1{font-size:23px}
-    .card .top{flex-direction:column}
-    .open{align-self:flex-start;margin-top:6px}
+    .brand h1{font-size:16px}
+    .brand p{display:none}
+    .grid2{grid-template-columns:1fr}
+    .card-top{flex-direction:column}
   }
 </style>
 </head>
 <body>
-<header class="hero">
-  <h1>Gjurmues i Udhërrëfyesve dhe Protokolleve Klinike</h1>
-  <p>Kërko, filtro dhe hap dokumentet zyrtare — direkt te burimi.</p>
-  <div class="src">Burimi: <a href="https://msh.rks-gov.net/Documents/Index/273" target="_blank" rel="noopener">msh.rks-gov.net/Documents/Index/273</a></div>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2h6l1 4H8l1-4Z"/><path d="M5 8h14l-1.2 12.5a2 2 0 0 1-2 1.5H8.2a2 2 0 0 1-2-1.5L5 8Z"/><path d="M12 11v6M9 14h6"/></svg></div>
+      <div>
+        <h1>Gjurmues i Udhërrëfyesve dhe Protokolleve Klinike</h1>
+        <p>Kërko, filtro dhe hap dokumentet zyrtare — direkt te burimi.</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="themeBtn" class="btn icon ghost" title="Ndrysho temën" aria-label="Ndrysho temën"></button>
+      <button id="adminBtn" class="btn primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Admin
+      </button>
+    </div>
+  </div>
 </header>
+<div class="srcband">Burimi: <a href="https://msh.rks-gov.net/Documents/Index/273" target="_blank" rel="noopener">msh.rks-gov.net/Documents/Index/273</a></div>
 
 <div class="wrap">
   <div class="toolbar">
     <div class="searchbox">
       <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-      <input id="q" type="text" placeholder="Kërko sipas titullit, specializimit ose vitit… (p.sh. diabet, HIV, COVID, lindja)" autocomplete="off" spellcheck="false">
+      <input id="q" type="text" placeholder="Kërko sipas titullit, specializimit ose vitit…" autocomplete="off" spellcheck="false">
       <button class="clear" id="clear" title="Pastro">&times;</button>
     </div>
     <div class="row2">
@@ -163,9 +264,7 @@
         <div class="chips" id="typeFilters"></div>
       </div>
       <div class="fbox">
-        <div class="label">
-          Filter <span class="reset" id="specReset">Pastro (<span id="specSelCount">0</span>)</span>
-        </div>
+        <div class="label">Filter <span class="reset" id="specReset">Pastro (<span id="specSelCount">0</span>)</span></div>
         <div class="specsearch">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
           <input id="specSearch" type="text" placeholder="Kërko specializim…" autocomplete="off" spellcheck="false">
@@ -191,11 +290,71 @@
   </footer>
 </div>
 
+<!-- ---------- Admin modal ---------- -->
+<div class="overlay" id="adminOverlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <div>
+        <h2>Paneli i Administrimit</h2>
+        <div class="sub">Shto dokumente të reja. Ruhen lokalisht në këtë shfletues; përdor "Eksporto JSON" për t'i bërë të përhershme.</div>
+      </div>
+      <button id="adminClose" class="btn icon ghost" aria-label="Mbyll">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="adminForm" class="adminform">
+        <label>Titulli i dokumentit *
+          <input name="title" required placeholder="p.sh. Menaxhimi i anemisë në fëmijë">
+        </label>
+        <div class="grid2">
+          <label>Lloji *
+            <select name="type">
+              <option>Udhërrëfyes Klinik</option>
+              <option>Protokoll Klinik</option>
+              <option>Udhëzues</option>
+              <option>Tjera</option>
+            </select>
+          </label>
+          <label>Data
+            <input type="date" name="date">
+          </label>
+        </div>
+        <label>Specializimet
+          <input name="specs" placeholder="Ndaji me presje, p.sh. Pediatri, Mjekësi Familjare">
+          <div class="spec-suggest" id="specSuggest"></div>
+        </label>
+        <label>Linku i dokumentit *
+          <input name="url" required placeholder="https://…  ose  /Documents/DownloadDocument?fileName=…">
+          <span class="hint">Ngjit URL-në e plotë, një shteg që fillon me “/”, ose vetëm fileName-in.</span>
+        </label>
+        <div class="formbtns">
+          <button type="submit" class="btn primary">Shto dokumentin</button>
+          <span id="adminMsg" class="msg"></span>
+        </div>
+      </form>
+
+      <div class="admin-list-wrap">
+        <div class="admin-list-head">
+          <h3>Dokumentet e shtuara (<span id="adminCount">0</span>)</h3>
+          <div class="io-actions">
+            <button id="exportBtn" class="btn ghost sm">Eksporto JSON</button>
+            <button id="importBtn" class="btn ghost sm">Importo</button>
+          </div>
+        </div>
+        <div id="adminList" class="admin-list"></div>
+        <textarea id="ioArea" class="ioarea" hidden placeholder="JSON…"></textarea>
+        <div class="io-actions" id="applyWrap" hidden>
+          <button id="applyBtn" class="btn primary sm">Apliko importin</button>
+          <button id="ioCloseBtn" class="btn ghost sm">Mbyll</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 const BASE = "https://msh.rks-gov.net";
 
-// ---- Raw data crawled from msh.rks-gov.net/Documents/Index/273 ----
-// [title, href, "dd.mm.yyyy"]
+// ---- Data crawled from msh.rks-gov.net/Documents/Index/273 ----
 const RAW = [
 ["Udhërrëfyesi Klinik - Menaxhimi sindromik i rasteve me IST","/Documents/DownloadDocument?fileName=Udh%C3%ABr49587919.4567.pdf","10.04.2026"],
 ["Udhërrëfyesi Klinik - Rreziku i mbidozimit ndaj alkoolit dhe drogave tjera","/Documents/DownloadDocument?fileName=Udh%C3%ABr49499898.2016.pdf","10.04.2026"],
@@ -260,241 +419,334 @@ const RAW = [
 ["UK - Mbikëqyrje në Rast për HIV (Konsultime Publike)","/Documents/DownloadDocument?fileName=UK%20Mbik%C3%ABqyrje%20n%C3%AB%20Rast%20p%C3%ABr%20HIV%20(Konsultime%20Publike)38582869.1232.docx","04.11.2022"],
 ];
 
-// ---- Document type: exactly 4 buckets (uncertain -> Tjera) ----
+// ---- Type detection (4 buckets, uncertain -> Tjera) ----
 function detectType(t){
-  const s = t.toLowerCase();
-  if(s.startsWith("protokoll") || s.startsWith("pkk")) return "Protokoll Klinik";
+  const s=t.toLowerCase();
+  if(s.startsWith("protokoll")||s.startsWith("pkk")) return "Protokoll Klinik";
   if(s.includes("udhëzues")) return "Udhëzues";
-  if(s.startsWith("udhërrëfyes") || s.startsWith("uk ") || s.startsWith("uk-")) return "Udhërrëfyes Klinik";
+  if(s.startsWith("udhërrëfyes")||s.startsWith("uk ")||s.startsWith("uk-")) return "Udhërrëfyes Klinik";
   return "Tjera";
 }
-const TYPE_ORDER = ["Udhërrëfyes Klinik","Protokoll Klinik","Udhëzues","Tjera"];
+const TYPE_ORDER=["Udhërrëfyes Klinik","Protokoll Klinik","Udhëzues","Tjera"];
 
-// ---- Specialization / target audience tags (derived from the clinical titles) ----
-const SPEC_RULES = [
-  ["Gjinekologji-Obstetrikë", ["lindje","shtatëzani","postnatal","antenatal","cezariane","postpartale","preeklamps","hemorragji","mitrës","dhunës seksuale"]],
-  ["Endokrinologji",          ["sheqer","diabet","insulin","antidiabet","osteoporoz"]],
-  ["Psikiatri",               ["depresion","ankth","suicid","skizofreni","traumat","stresit","obsesive","mendor","psikosocial"]],
-  ["Pulmologji",              ["pulmonare","astm"]],
-  ["Kardiologji",             ["hipertension"]],
-  ["Infektologji",            ["hiv","aids"," ist","covid","tuberkuloz","hepatit","testimit","plazmë","antibiotik"]],
-  ["Neurologji",              ["epilep","iskemike trunore"]],
-  ["Nefrologji",              ["dializ"]],
-  ["Urologji",                ["urinar"]],
-  ["Gastroenterologji",       ["gastrointestinal","gjakderdhje"]],
-  ["Neonatologji",            ["neonatal"]],
-  ["Pediatri",                ["adoleshent","neonatal"]],
-  ["Stomatologji",            ["stomatolog","azot oksidul"]],
-  ["Hematologji & Transfuzion",["dhbgj","gjakut","transfuz"]],
-  ["Onkologji",               ["prekanceroze"]],
-  ["Reumatologji",            ["osteoporoz"]],
-  ["Varësi & Toksikologji",   ["alkool","drog","metadon","opioide","mbidozim"]],
-  ["Mjekësi Familjare",       ["kpsh","parësor"]],
-  ["Administratë Shëndetësore",["arkivim","dokumentacion financiar","vendim","plani i veprimit"]],
-];
-function detectSpecs(t){
-  const s = " " + t.toLowerCase() + " ";
-  const out = [];
-  for(const [name,kws] of SPEC_RULES){
-    if(kws.some(k=>s.includes(k)) && !out.includes(name)) out.push(name);
-  }
-  return out.length ? out : ["Tjera"];
-}
-
-const strip = s => s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
-
-// ---- Verified type overrides (covers opened & read one-by-one) ----
-// These older titles carry no prefix but their cover page prints
-// "UDHËRRËFYES KLINIK". Keyed by the unique numeric id in the file name.
-const OVERRIDE_UDHER = new Set([
+// ---- Verified overrides: covers read one-by-one print "UDHËRRËFYES KLINIK" ----
+const OVERRIDE_UDHER=new Set([
   "46787584.2312","46495245.562","46146825.7972","46019544.7593","45905409.0477",
   "45812721.4552","45663126.2898","45572941.1968","45370002.8259","41606200.4204",
   "41487085.8149","41404938.7077","41266873.7919","41125761.4307","40718461.6423",
   "40519089.3729","40374888.0385","40248446.1821","40068690.6739","39857639.78"
 ]);
-function isOverrideUdher(href){
-  for(const id of OVERRIDE_UDHER){ if(href.endsWith(id+".pdf")) return true; }
-  return false;
+function isOverrideUdher(href){ for(const id of OVERRIDE_UDHER){ if(href.endsWith(id+".pdf")) return true; } return false; }
+
+// ---- Specialization tags (target audience) ----
+const SPEC_RULES=[
+  ["Gjinekologji-Obstetrikë",["lindje","shtatëzani","postnatal","antenatal","cezariane","postpartale","preeklamps","hemorragji","mitrës","dhunës seksuale"]],
+  ["Endokrinologji",["sheqer","diabet","insulin","antidiabet","osteoporoz"]],
+  ["Psikiatri",["depresion","ankth","suicid","skizofreni","traumat","stresit","obsesive","mendor","psikosocial"]],
+  ["Pulmologji",["pulmonare","astm"]],
+  ["Kardiologji",["hipertension"]],
+  ["Infektologji",["hiv","aids"," ist","covid","tuberkuloz","hepatit","testimit","plazmë","antibiotik"]],
+  ["Neurologji",["epilep","iskemike trunore"]],
+  ["Nefrologji",["dializ"]],
+  ["Urologji",["urinar"]],
+  ["Gastroenterologji",["gastrointestinal","gjakderdhje"]],
+  ["Neonatologji",["neonatal"]],
+  ["Pediatri",["adoleshent","neonatal"]],
+  ["Stomatologji",["stomatolog","azot oksidul"]],
+  ["Hematologji & Transfuzion",["dhbgj","gjakut","transfuz"]],
+  ["Onkologji",["prekanceroze"]],
+  ["Reumatologji",["osteoporoz"]],
+  ["Varësi & Toksikologji",["alkool","drog","metadon","opioide","mbidozim"]],
+  ["Mjekësi Familjare",["kpsh","parësor"]],
+  ["Administratë Shëndetësore",["arkivim","dokumentacion financiar","vendim","plani i veprimit"]],
+];
+function detectSpecs(t){
+  const s=" "+t.toLowerCase()+" "; const out=[];
+  for(const [name,kws] of SPEC_RULES){ if(kws.some(k=>s.includes(k))&&!out.includes(name)) out.push(name); }
+  return out.length?out:["Tjera"];
 }
 
-// ---- Build the document objects ----
-const DOCS = RAW.map(([title,href,date],i)=>{
-  const [d,m,y] = date.split(".");
-  const ext = href.toLowerCase().endsWith(".docx") ? "docx" : "pdf";
-  let type = detectType(title);
-  if(isOverrideUdher(href)) type = "Udhërrëfyes Klinik";
-  const specs = detectSpecs(title);
-  return {
-    id:i, title, url:BASE+href, date, year:y, ext, type, specs,
-    sortKey:+(y+m+d),
-    search: strip(title+" "+date+" "+type+" "+specs.join(" "))
-  };
+const strip = s => s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+
+// ---- Clean displayed title: drop the leading type label (it lives in the filters) ----
+function cleanTitle(t){
+  let s=(t||"").trim();
+  s=s.replace(/^(?:Vendimi për aprovim të Udhërrëfyesit Klinik|Udhërr[ëe]fyesi?(?: Klinik)?|Udhërrfyesi(?: Klinik)?|Protokolli?(?: Klinik)?|PKK|UK)\s*(?:[-–—:,]+\s*|(?=['"“”‘’«»]))/i,"");
+  s=s.replace(/^['"“”‘’«»]+\s*/,"").replace(/\s*['"“”‘’«»]+$/,"");
+  return s.trim() || (t||"").trim();
+}
+
+function esc(x){return (x==null?"":""+x).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+// ---- Build one normalized doc ----
+function makeDoc(o,key){
+  const [d,m,y]=o.date.split(".");
+  const ext=(o.url||"").toLowerCase().endsWith(".docx")?"docx":"pdf";
+  const specs=(o.specs&&o.specs.length)?o.specs:["Tjera"];
+  const display=cleanTitle(o.title);
+  return {id:key,title:o.title,display,url:o.url,date:o.date,year:y,ext,type:o.type,specs,
+    admin:!!o.admin, sortKey:+(""+y+m+d),
+    search:strip(o.title+" "+display+" "+o.date+" "+o.type+" "+specs.join(" "))};
+}
+
+const BASE_DOCS = RAW.map(([title,href,date],i)=>{
+  let type=detectType(title);
+  if(isOverrideUdher(href)) type="Udhërrëfyes Klinik";
+  return makeDoc({title,url:BASE+href,date,type,specs:detectSpecs(title),admin:false},"d"+i);
 });
+
+// ---- Admin docs (localStorage) ----
+const ADMIN_KEY="msh_admin_docs_v1";
+function loadAdmin(){ try{return JSON.parse(localStorage.getItem(ADMIN_KEY))||[];}catch(e){return [];} }
+function saveAdmin(){ try{localStorage.setItem(ADMIN_KEY,JSON.stringify(adminRaw));}catch(e){} }
+let adminRaw=loadAdmin();
+function buildAdminDocs(){ return adminRaw.map((r,i)=>makeDoc({title:r.title,url:r.url,date:r.date,type:r.type,specs:r.specs||[],admin:true},"a"+i)); }
 
 // ---- State ----
-const state = { q:"", type:null, specs:new Set(), year:null, sort:"date_desc",
-                specSearch:"", specExpanded:false };
-const COLLAPSE_N = 4;
+let DOCS=[]; let typeCounts={},specCounts={},yearCounts={},SPEC_SORTED=[];
+const state={q:"",type:null,specs:new Set(),year:null,sort:"date_desc",specSearch:"",specExpanded:false};
+const COLLAPSE_N=4;
 
-// ---- Counts ----
-const typeCounts={}, specCounts={}, yearCounts={};
-DOCS.forEach(d=>{
-  typeCounts[d.type]=(typeCounts[d.type]||0)+1;
-  d.specs.forEach(s=>specCounts[s]=(specCounts[s]||0)+1);
-  yearCounts[d.year]=(yearCounts[d.year]||0)+1;
-});
+// ---- DOM ----
+const typeWrap=document.getElementById("typeFilters");
+const specWrap=document.getElementById("specFilters");
+const specMore=document.getElementById("specMore");
+const specSearch=document.getElementById("specSearch");
+const specReset=document.getElementById("specReset");
+const specSelCount=document.getElementById("specSelCount");
+const yearWrap=document.getElementById("years");
+const qEl=document.getElementById("q");
+const clearEl=document.getElementById("clear");
+const grid=document.getElementById("grid");
+const empty=document.getElementById("empty");
+const countEl=document.getElementById("count");
 
-// ---- Type chips (single-select) ----
-const typeWrap = document.getElementById("typeFilters");
-TYPE_ORDER.filter(t=>typeCounts[t]).forEach(name=>{
-  const c=document.createElement("div");
-  c.className="chip"; c.innerHTML=`${name} <span class="n">${typeCounts[name]}</span>`;
-  c.onclick=()=>{ state.type = state.type===name?null:name;
-    [...typeWrap.children].forEach(x=>x.classList.toggle("on",x===c&&state.type===name));
-    render(); };
-  typeWrap.appendChild(c);
-});
-
-// ---- Specialization chips (multi-select, collapsible, searchable) ----
-const specWrap   = document.getElementById("specFilters");
-const specMore   = document.getElementById("specMore");
-const specSearch = document.getElementById("specSearch");
-const specReset  = document.getElementById("specReset");
-const specSelCount = document.getElementById("specSelCount");
-const SPEC_SORTED = Object.keys(specCounts).sort((a,b)=>
-  specCounts[b]-specCounts[a] || a.localeCompare(b,"sq"));
-
+// ---- Counts & filter chips ----
+function computeCounts(){
+  typeCounts={};specCounts={};yearCounts={};
+  DOCS.forEach(d=>{
+    typeCounts[d.type]=(typeCounts[d.type]||0)+1;
+    d.specs.forEach(s=>specCounts[s]=(specCounts[s]||0)+1);
+    yearCounts[d.year]=(yearCounts[d.year]||0)+1;
+  });
+  SPEC_SORTED=Object.keys(specCounts).sort((a,b)=>specCounts[b]-specCounts[a]||a.localeCompare(b,"sq"));
+}
+function buildTypeChips(){
+  typeWrap.innerHTML="";
+  TYPE_ORDER.filter(t=>typeCounts[t]).forEach(name=>{
+    const c=document.createElement("button"); c.type="button";
+    c.className="chip"+(state.type===name?" on":"");
+    c.innerHTML=`${esc(name)} <span class="n">${typeCounts[name]}</span>`;
+    c.onclick=()=>{ state.type=state.type===name?null:name; buildTypeChips(); render(); };
+    typeWrap.appendChild(c);
+  });
+}
+function buildYearChips(){
+  yearWrap.innerHTML="";
+  Object.keys(yearCounts).sort((a,b)=>b-a).forEach(y=>{
+    const c=document.createElement("button"); c.type="button";
+    c.className="yr"+(state.year===y?" on":"");
+    c.innerHTML=`${y} <span class="n">${yearCounts[y]}</span>`;
+    c.onclick=()=>{ state.year=state.year===y?null:y; buildYearChips(); render(); };
+    yearWrap.appendChild(c);
+  });
+}
 function renderSpecChips(){
-  const q = strip(state.specSearch.trim());
-  let list = SPEC_SORTED.filter(name=> !q || strip(name).includes(q));
-  // always keep selected ones reachable
-  const searching = q.length>0;
+  const q=strip(state.specSearch.trim());
+  const list=SPEC_SORTED.filter(name=> !q || strip(name).includes(q));
+  const searching=q.length>0;
   let visible;
-  if(searching || state.specExpanded){
-    visible = list;
-  }else{
-    visible = list.slice(0, COLLAPSE_N);
-    [...state.specs].forEach(sel=>{ if(list.includes(sel) && !visible.includes(sel)) visible.push(sel); });
+  if(searching||state.specExpanded){ visible=list; }
+  else{
+    visible=list.slice(0,COLLAPSE_N);
+    [...state.specs].forEach(sel=>{ if(list.includes(sel)&&!visible.includes(sel)) visible.push(sel); });
   }
-
   specWrap.innerHTML = visible.length
-    ? visible.map(name=>{
-        const on = state.specs.has(name) ? " on":"";
-        return `<div class="chip${on}" data-spec="${name.replace(/"/g,'&quot;')}">${name} <span class="n">${specCounts[name]}</span></div>`;
-      }).join("")
+    ? visible.map(name=>`<button type="button" class="chip${state.specs.has(name)?' on':''}" data-spec="${esc(name)}">${esc(name)} <span class="n">${specCounts[name]}</span></button>`).join("")
     : `<div class="nomatch">Asnjë specializim s'u gjet.</div>`;
-
-  // "show more / less" toggle (only when not searching and there is overflow)
-  const hidden = list.length - COLLAPSE_N;
-  if(!searching && hidden>0){
-    specMore.style.display="block";
-    specMore.textContent = state.specExpanded ? "Shfaq më pak" : `Shfaq të gjitha (${list.length})`;
-  }else{
-    specMore.style.display="none";
-  }
-
-  const n = state.specs.size;
-  specSelCount.textContent = n;
-  specReset.style.display = n ? "inline":"none";
+  const hidden=list.length-COLLAPSE_N;
+  if(!searching&&hidden>0){ specMore.style.display="block"; specMore.textContent=state.specExpanded?"Shfaq më pak":`Shfaq të gjitha (${list.length})`; }
+  else specMore.style.display="none";
+  specSelCount.textContent=state.specs.size;
+  specReset.style.display=state.specs.size?"inline":"none";
 }
 specWrap.addEventListener("click",e=>{
-  const chip = e.target.closest("[data-spec]");
-  if(!chip) return;
-  const name = chip.dataset.spec;
-  state.specs.has(name) ? state.specs.delete(name) : state.specs.add(name);
+  const chip=e.target.closest("[data-spec]"); if(!chip) return;
+  const name=chip.dataset.spec;
+  state.specs.has(name)?state.specs.delete(name):state.specs.add(name);
   renderSpecChips(); render();
 });
-specSearch.addEventListener("input",()=>{ state.specSearch = specSearch.value; renderSpecChips(); });
-specMore.onclick = ()=>{ state.specExpanded = !state.specExpanded; renderSpecChips(); };
-specReset.onclick = ()=>{ state.specs.clear(); renderSpecChips(); render(); };
+specSearch.addEventListener("input",()=>{ state.specSearch=specSearch.value; renderSpecChips(); });
+specMore.onclick=()=>{ state.specExpanded=!state.specExpanded; renderSpecChips(); };
+specReset.onclick=()=>{ state.specs.clear(); renderSpecChips(); render(); };
 
-// ---- Year chips ----
-const yearWrap = document.getElementById("years");
-Object.keys(yearCounts).sort((a,b)=>b-a).forEach(y=>{
-  const c=document.createElement("div");
-  c.className="yr"; c.innerHTML=`${y} <span class="n">${yearCounts[y]}</span>`;
-  c.onclick=()=>{ state.year = state.year===y?null:y;
-    [...yearWrap.children].forEach(x=>x.classList.toggle("on",x===c&&state.year===y));
-    render(); };
-  yearWrap.appendChild(c);
-});
-
-// ---- Main search input ----
-const qEl = document.getElementById("q");
-const clearEl = document.getElementById("clear");
-qEl.addEventListener("input",()=>{
-  state.q = qEl.value;
-  clearEl.style.display = qEl.value ? "block":"none";
-  render();
-});
+// ---- Search / sort ----
+qEl.addEventListener("input",()=>{ state.q=qEl.value; clearEl.style.display=qEl.value?"block":"none"; render(); });
 clearEl.onclick=()=>{ qEl.value=""; state.q=""; clearEl.style.display="none"; qEl.focus(); render(); };
 document.getElementById("sort").addEventListener("change",e=>{ state.sort=e.target.value; render(); });
 
-// ---- Highlight matches in title ----
-function esc(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
-function highlight(title, q){
-  const nq = strip(q.trim());
-  if(!nq) return esc(title);
-  const nt = strip(title);
-  let out="", i=0;
+function highlight(title,q){
+  const nq=strip(q.trim()); if(!nq) return esc(title);
+  const nt=strip(title); let out="",i=0;
   while(i<title.length){
-    const idx = nt.indexOf(nq, i);
+    const idx=nt.indexOf(nq,i);
     if(idx<0){ out+=esc(title.slice(i)); break; }
     out+=esc(title.slice(i,idx))+"<mark>"+esc(title.slice(idx,idx+nq.length))+"</mark>";
     i=idx+nq.length;
   }
   return out;
 }
+const calIco='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="0"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>';
+const openIco='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>';
 
-const calIco='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>';
-const openIco='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>';
-
-// ---- Render result list ----
 function render(){
-  const tokens = strip(state.q).trim().split(/\s+/).filter(Boolean);
-  let list = DOCS.filter(d=>{
-    if(state.type && d.type!==state.type) return false;
-    if(state.year && d.year!==state.year) return false;
-    if(state.specs.size && ![...state.specs].every(s=>d.specs.includes(s))) return false;
-    if(tokens.length && !tokens.every(tk=>d.search.includes(tk))) return false;
+  const tokens=strip(state.q).trim().split(/\s+/).filter(Boolean);
+  let list=DOCS.filter(d=>{
+    if(state.type&&d.type!==state.type) return false;
+    if(state.year&&d.year!==state.year) return false;
+    if(state.specs.size&&![...state.specs].every(s=>d.specs.includes(s))) return false;
+    if(tokens.length&&!tokens.every(tk=>d.search.includes(tk))) return false;
     return true;
   });
-
   const s=state.sort;
   list.sort((a,b)=>{
     if(s==="date_desc") return b.sortKey-a.sortKey;
     if(s==="date_asc")  return a.sortKey-b.sortKey;
-    if(s==="title_asc") return a.title.localeCompare(b.title,"sq");
-    if(s==="title_desc")return b.title.localeCompare(a.title,"sq");
+    if(s==="title_asc") return a.display.localeCompare(b.display,"sq");
+    if(s==="title_desc")return b.display.localeCompare(a.display,"sq");
   });
-
-  const grid=document.getElementById("grid");
-  const empty=document.getElementById("empty");
-  document.getElementById("count").innerHTML =
-    `Po shfaqen <b>${list.length}</b> nga <b>${DOCS.length}</b> dokumente`;
-
+  countEl.innerHTML=`Po shfaqen <b>${list.length}</b> nga <b>${DOCS.length}</b> dokumente`;
   if(!list.length){ grid.innerHTML=""; empty.style.display="block"; return; }
   empty.style.display="none";
-
-  grid.innerHTML = list.map(d=>`
-    <a class="card" href="${d.url}" target="_blank" rel="noopener" title="Hap dokumentin">
-      <div class="top">
-        <h3>${highlight(d.title, state.q)}</h3>
-        <span class="open">Hap ${openIco}</span>
+  grid.innerHTML=list.map(d=>`
+    <a class="card${d.admin?' is-admin':''}" href="${esc(d.url)}" target="_blank" rel="noopener" title="Hap dokumentin">
+      <div class="card-top">
+        <h3>${highlight(d.display,state.q)}</h3>
+        <span class="open">${openIco}</span>
       </div>
       <div class="meta">
         <span class="ftype ${d.ext}">${d.ext.toUpperCase()}</span>
-        <span class="date">${calIco} ${d.date}</span>
+        <span class="date">${calIco}${esc(d.date)}</span>
+        ${d.admin?'<span class="addedflag">I shtuar</span>':''}
       </div>
       <div class="tags">
-        <span class="tag type">${d.type}</span>
-        ${d.specs.map(t=>`<span class="tag">${t}</span>`).join("")}
+        <span class="tag type">${esc(d.type)}</span>
+        ${d.specs.map(t=>`<span class="tag">${esc(t)}</span>`).join("")}
       </div>
     </a>`).join("");
 }
 
-renderSpecChips();
-render();
+// ---- Rebuild everything when the dataset changes ----
+function rebuild(){
+  DOCS=[...BASE_DOCS,...buildAdminDocs()];
+  computeCounts(); buildTypeChips(); buildYearChips(); renderSpecChips(); render();
+}
+
+// ---- Theme ----
+const themeBtn=document.getElementById("themeBtn");
+const SUN='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/></svg>';
+const MOON='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8Z"/></svg>';
+function updateThemeIcon(){ themeBtn.innerHTML=(document.documentElement.getAttribute("data-theme")==="dark")?SUN:MOON; }
+themeBtn.onclick=()=>{
+  const cur=document.documentElement.getAttribute("data-theme");
+  const next=cur==="dark"?"light":"dark";
+  document.documentElement.setAttribute("data-theme",next);
+  try{localStorage.setItem("msh_theme",next);}catch(e){}
+  updateThemeIcon();
+};
+updateThemeIcon();
+
+// ---- Admin panel ----
+const adminOverlay=document.getElementById("adminOverlay");
+const adminForm=document.getElementById("adminForm");
+const adminMsgEl=document.getElementById("adminMsg");
+const adminList=document.getElementById("adminList");
+const adminCountEl=document.getElementById("adminCount");
+const specSuggest=document.getElementById("specSuggest");
+const ioArea=document.getElementById("ioArea");
+const applyWrap=document.getElementById("applyWrap");
+
+function adminMsg(t,kind){ adminMsgEl.textContent=t; adminMsgEl.className="msg "+(kind||""); if(t) setTimeout(()=>{ if(adminMsgEl.textContent===t){adminMsgEl.textContent="";adminMsgEl.className="msg";} },2600); }
+
+document.getElementById("adminBtn").onclick=()=>{ adminOverlay.hidden=false; document.body.style.overflow="hidden"; renderAdminList(); renderSpecSuggest(); };
+function closeAdmin(){ adminOverlay.hidden=true; document.body.style.overflow=""; ioArea.hidden=true; applyWrap.hidden=true; }
+document.getElementById("adminClose").onclick=closeAdmin;
+adminOverlay.addEventListener("click",e=>{ if(e.target===adminOverlay) closeAdmin(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!adminOverlay.hidden) closeAdmin(); });
+
+function renderSpecSuggest(){
+  specSuggest.innerHTML=SPEC_SORTED.map(n=>`<button type="button" class="sugg" data-s="${esc(n)}">+ ${esc(n)}</button>`).join("");
+}
+specSuggest.onclick=e=>{
+  const b=e.target.closest("[data-s]"); if(!b) return;
+  const inp=adminForm.elements.specs;
+  const cur=inp.value.split(",").map(x=>x.trim()).filter(Boolean);
+  if(!cur.includes(b.dataset.s)) cur.push(b.dataset.s);
+  inp.value=cur.join(", ");
+};
+
+adminForm.onsubmit=e=>{
+  e.preventDefault();
+  const f=adminForm.elements;
+  const title=f.title.value.trim();
+  let url=f.url.value.trim();
+  const type=f.type.value;
+  let date=f.date.value;
+  const specs=f.specs.value.split(",").map(x=>x.trim()).filter(Boolean);
+  if(!title||!url){ adminMsg("Plotëso titullin dhe linkun.","err"); return; }
+  if(/^https?:\/\//i.test(url)){}
+  else if(url.startsWith("/")){ url=BASE+url; }
+  else{ url=BASE+"/Documents/DownloadDocument?fileName="+url; }
+  if(date){ const [yy,mm,dd]=date.split("-"); date=`${dd}.${mm}.${yy}`; }
+  else{ const t=new Date(); date=`${String(t.getDate()).padStart(2,"0")}.${String(t.getMonth()+1).padStart(2,"0")}.${t.getFullYear()}`; }
+  adminRaw.push({title,url,date,type,specs});
+  saveAdmin(); rebuild(); renderAdminList(); renderSpecSuggest();
+  adminForm.reset();
+  adminMsg("U shtua dokumenti ✓","ok");
+};
+
+function renderAdminList(){
+  adminCountEl.textContent=adminRaw.length;
+  if(!adminRaw.length){ adminList.innerHTML='<div class="admin-empty">S\'ka ende dokumente të shtuara.</div>'; return; }
+  adminList.innerHTML=adminRaw.map((r,i)=>`
+    <div class="admin-item">
+      <div class="ai-main">
+        <div class="ai-title">${esc(cleanTitle(r.title))}</div>
+        <div class="ai-meta">${esc(r.type)} · ${esc(r.date)} · ${(r.specs||[]).map(esc).join(", ")||"—"}</div>
+      </div>
+      <button class="btn danger sm" data-del="${i}">Fshij</button>
+    </div>`).join("");
+}
+adminList.onclick=e=>{
+  const b=e.target.closest("[data-del]"); if(!b) return;
+  adminRaw.splice(+b.dataset.del,1); saveAdmin(); rebuild(); renderAdminList(); renderSpecSuggest();
+};
+
+document.getElementById("exportBtn").onclick=async()=>{
+  ioArea.hidden=false; applyWrap.hidden=true;
+  ioArea.value=JSON.stringify(adminRaw,null,2); ioArea.focus(); ioArea.select();
+  try{ await navigator.clipboard.writeText(ioArea.value); adminMsg("JSON u kopjua ✓","ok"); }
+  catch(e){ adminMsg("Zgjidh tekstin dhe kopjo (Ctrl+C).","err"); }
+};
+document.getElementById("importBtn").onclick=()=>{
+  ioArea.hidden=false; applyWrap.hidden=false; ioArea.value="";
+  ioArea.placeholder='Ngjit këtu JSON-in e eksportuar, pastaj kliko "Apliko importin".';
+  ioArea.focus();
+};
+document.getElementById("applyBtn").onclick=()=>{
+  try{
+    const arr=JSON.parse(ioArea.value);
+    if(!Array.isArray(arr)) throw 0;
+    adminRaw=arr.map(r=>({title:String(r.title||""),url:String(r.url||""),date:String(r.date||""),type:r.type||"Tjera",specs:Array.isArray(r.specs)?r.specs:[]})).filter(r=>r.title&&r.url);
+    saveAdmin(); rebuild(); renderAdminList(); renderSpecSuggest();
+    ioArea.hidden=true; applyWrap.hidden=true;
+    adminMsg("U importua ✓","ok");
+  }catch(e){ adminMsg("JSON i pavlefshëm.","err"); }
+};
+document.getElementById("ioCloseBtn").onclick=()=>{ ioArea.hidden=true; applyWrap.hidden=true; };
+
+// ---- Init ----
+rebuild();
 </script>
 </body>
 </html>
