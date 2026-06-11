@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Udhërrëfyesit dhe Protokollet Klinike — Kërko & Filtro | MSH</title>
+<title>Gjurmues i Udhërrëfyesve dhe Protokolleve Klinike</title>
 <style>
   :root{
     --bg:#0f1720; --panel:#16212e; --panel2:#1d2c3d; --line:#27384b;
@@ -20,16 +20,13 @@
     line-height:1.5;
   }
   a{color:inherit;text-decoration:none}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 18px 60px}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 18px 60px}
 
   header.hero{
     padding:38px 18px 26px;text-align:center;
     border-bottom:1px solid var(--line);
     background:radial-gradient(800px 260px at 50% -40px,rgba(58,160,255,.12),transparent);
   }
-  .hero .badge{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--accent);background:rgba(58,160,255,.1);border:1px solid rgba(58,160,255,.3);
-    padding:5px 12px;border-radius:999px;margin-bottom:14px}
   .hero h1{margin:0 0 8px;font-size:30px;font-weight:700}
   .hero p{margin:0;color:var(--muted);font-size:15px}
   .hero .src{margin-top:10px;font-size:13px}
@@ -48,27 +45,50 @@
   .searchbox .clear{position:absolute;right:12px;top:50%;transform:translateY(-50%);
     color:var(--muted);cursor:pointer;border:none;background:none;font-size:20px;display:none}
 
-  .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:16px 0 4px}
-  .filters .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;
-    margin-right:4px;align-self:center}
-  .chip{cursor:pointer;border:1px solid var(--line);background:var(--chip);color:var(--txt);
-    padding:7px 13px;border-radius:999px;font-size:13px;white-space:nowrap;
-    transition:.12s;user-select:none;display:inline-flex;align-items:center;gap:6px}
-  .chip:hover{border-color:var(--accent)}
-  .chip.on{background:var(--chip-on);border-color:var(--accent);color:#fff;font-weight:600}
-  .chip .n{font-size:11px;opacity:.7}
-
   .row2{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin:14px 0 2px}
   .years{display:flex;flex-wrap:wrap;gap:6px}
   .yr{cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--muted);
     padding:5px 11px;border-radius:8px;font-size:13px;transition:.12s}
   .yr:hover{color:var(--txt);border-color:var(--accent)}
   .yr.on{background:var(--accent2);color:#fff;border-color:var(--accent);font-weight:600}
+  .yr .n{font-size:11px;opacity:.7}
   .sortwrap{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
   select{background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:8px;
     padding:6px 10px;font-size:13px;outline:none}
 
-  .count{color:var(--muted);font-size:13px;margin:18px 2px 12px}
+  /* Two-column layout: filters in LEFT sidebar, results on the right */
+  .layout{display:flex;gap:24px;align-items:flex-start;margin-top:14px}
+  .sidebar{width:255px;flex-shrink:0;position:sticky;top:132px;
+    max-height:calc(100vh - 152px);overflow-y:auto;padding-right:2px}
+  .main{flex:1;min-width:0}
+  .sidebar::-webkit-scrollbar{width:8px}
+  .sidebar::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+
+  .fbox{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:14px;margin:0 0 14px}
+  .fbox .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;
+    margin:0 0 10px;display:flex;justify-content:space-between;align-items:center}
+  .fbox .label .reset{cursor:pointer;color:var(--accent);text-transform:none;letter-spacing:0;
+    font-size:11px;display:none}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{cursor:pointer;border:1px solid var(--line);background:var(--chip);color:var(--txt);
+    padding:7px 12px;border-radius:999px;font-size:13px;white-space:nowrap;
+    transition:.12s;user-select:none;display:inline-flex;align-items:center;gap:6px}
+  .chip:hover{border-color:var(--accent)}
+  .chip.on{background:var(--chip-on);border-color:var(--accent);color:#fff;font-weight:600}
+  .chip .n{font-size:11px;opacity:.7}
+
+  .specsearch{position:relative;margin-bottom:10px}
+  .specsearch input{width:100%;padding:9px 12px 9px 32px;font-size:13px;color:var(--txt);
+    background:var(--bg);border:1px solid var(--line);border-radius:9px;outline:none}
+  .specsearch input:focus{border-color:var(--accent)}
+  .specsearch svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted)}
+  .more{margin-top:10px;width:100%;cursor:pointer;background:none;border:1px dashed var(--line);
+    color:var(--accent);border-radius:9px;padding:7px;font-size:12px;transition:.12s}
+  .more:hover{border-color:var(--accent);background:rgba(58,160,255,.06)}
+  .nomatch{color:var(--muted);font-size:12px;padding:4px 2px}
+
+  .count{color:var(--muted);font-size:13px;margin:2px 2px 14px}
   .count b{color:var(--txt)}
 
   .grid{display:grid;gap:12px}
@@ -97,6 +117,10 @@
   footer{margin-top:40px;text-align:center;color:var(--muted);font-size:12px;
     border-top:1px solid var(--line);padding-top:20px}
 
+  @media(max-width:820px){
+    .layout{flex-direction:column}
+    .sidebar{width:auto;position:static;max-height:none}
+  }
   @media(max-width:560px){
     .hero h1{font-size:23px}
     .card .top{flex-direction:column}
@@ -106,8 +130,7 @@
 </head>
 <body>
 <header class="hero">
-  <span class="badge">Ministria e Shëndetësisë · Republika e Kosovës</span>
-  <h1>Udhërrëfyesit dhe Protokollet Klinike</h1>
+  <h1>Gjurmues i Udhërrëfyesve dhe Protokolleve Klinike</h1>
   <p>Kërko, filtro dhe hap dokumentet zyrtare — direkt te burimi.</p>
   <div class="src">Burimi: <a href="https://msh.rks-gov.net/Documents/Index/273" target="_blank" rel="noopener">msh.rks-gov.net/Documents/Index/273</a></div>
 </header>
@@ -116,17 +139,9 @@
   <div class="toolbar">
     <div class="searchbox">
       <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-      <input id="q" type="text" placeholder="Kërko sipas titullit, temës ose vitit… (p.sh. diabet, HIV, COVID, lindja)" autocomplete="off" spellcheck="false">
+      <input id="q" type="text" placeholder="Kërko sipas titullit, specializimit ose vitit… (p.sh. diabet, HIV, COVID, lindja)" autocomplete="off" spellcheck="false">
       <button class="clear" id="clear" title="Pastro">&times;</button>
     </div>
-
-    <div class="filters" id="typeFilters">
-      <span class="label">Lloji</span>
-    </div>
-    <div class="filters" id="topicFilters">
-      <span class="label">Tema</span>
-    </div>
-
     <div class="row2">
       <div class="years" id="years"></div>
       <div class="sortwrap">
@@ -141,11 +156,33 @@
     </div>
   </div>
 
-  <div class="count" id="count"></div>
-  <div class="grid" id="grid"></div>
-  <div class="empty" id="empty" style="display:none">
-    <div class="big">🔍</div>
-    <div>Asnjë dokument nuk përputhet me kërkimin.</div>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="fbox">
+        <div class="label">Lloji</div>
+        <div class="chips" id="typeFilters"></div>
+      </div>
+      <div class="fbox">
+        <div class="label">
+          Filter <span class="reset" id="specReset">Pastro (<span id="specSelCount">0</span>)</span>
+        </div>
+        <div class="specsearch">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="specSearch" type="text" placeholder="Kërko specializim…" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="chips" id="specFilters"></div>
+        <button class="more" id="specMore"></button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="count" id="count"></div>
+      <div class="grid" id="grid"></div>
+      <div class="empty" id="empty" style="display:none">
+        <div class="big">🔍</div>
+        <div>Asnjë dokument nuk përputhet me kërkimin.</div>
+      </div>
+    </main>
   </div>
 
   <footer>
@@ -223,107 +260,151 @@ const RAW = [
 ["UK - Mbikëqyrje në Rast për HIV (Konsultime Publike)","/Documents/DownloadDocument?fileName=UK%20Mbik%C3%ABqyrje%20n%C3%AB%20Rast%20p%C3%ABr%20HIV%20(Konsultime%20Publike)38582869.1232.docx","04.11.2022"],
 ];
 
-// ---- Derive document type ----
+// ---- Document type: exactly 4 buckets (uncertain -> Tjera) ----
 function detectType(t){
   const s = t.toLowerCase();
   if(s.startsWith("protokoll") || s.startsWith("pkk")) return "Protokoll Klinik";
-  if(s.startsWith("udhëzues") || s.includes("udhëzuesi") || s.includes("udhëzues ")) return "Udhëzues";
-  if(s.startsWith("plani")) return "Plan Veprimi";
-  if(s.startsWith("vendimi")) return "Vendim";
+  if(s.includes("udhëzues")) return "Udhëzues";
   if(s.startsWith("udhërrëfyes") || s.startsWith("uk ") || s.startsWith("uk-")) return "Udhërrëfyes Klinik";
-  return "Dokument";
+  return "Tjera";
+}
+const TYPE_ORDER = ["Udhërrëfyes Klinik","Protokoll Klinik","Udhëzues","Tjera"];
+
+// ---- Specialization / target audience tags (derived from the clinical titles) ----
+const SPEC_RULES = [
+  ["Gjinekologji-Obstetrikë", ["lindje","shtatëzani","postnatal","antenatal","cezariane","postpartale","preeklamps","hemorragji","mitrës","dhunës seksuale"]],
+  ["Endokrinologji",          ["sheqer","diabet","insulin","antidiabet","osteoporoz"]],
+  ["Psikiatri",               ["depresion","ankth","suicid","skizofreni","traumat","stresit","obsesive","mendor","psikosocial"]],
+  ["Pulmologji",              ["pulmonare","astm"]],
+  ["Kardiologji",             ["hipertension"]],
+  ["Infektologji",            ["hiv","aids"," ist","covid","tuberkuloz","hepatit","testimit","plazmë","antibiotik"]],
+  ["Neurologji",              ["epilep","iskemike trunore"]],
+  ["Nefrologji",              ["dializ"]],
+  ["Urologji",                ["urinar"]],
+  ["Gastroenterologji",       ["gastrointestinal","gjakderdhje"]],
+  ["Neonatologji",            ["neonatal"]],
+  ["Pediatri",                ["adoleshent","neonatal"]],
+  ["Stomatologji",            ["stomatolog","azot oksidul"]],
+  ["Hematologji & Transfuzion",["dhbgj","gjakut","transfuz"]],
+  ["Onkologji",               ["prekanceroze"]],
+  ["Reumatologji",            ["osteoporoz"]],
+  ["Varësi & Toksikologji",   ["alkool","drog","metadon","opioide","mbidozim"]],
+  ["Mjekësi Familjare",       ["kpsh","parësor"]],
+  ["Administratë Shëndetësore",["arkivim","dokumentacion financiar","vendim","plani i veprimit"]],
+];
+function detectSpecs(t){
+  const s = " " + t.toLowerCase() + " ";
+  const out = [];
+  for(const [name,kws] of SPEC_RULES){
+    if(kws.some(k=>s.includes(k)) && !out.includes(name)) out.push(name);
+  }
+  return out.length ? out : ["Tjera"];
 }
 
-// ---- Derive basic topic tags by keyword ----
-const TOPIC_RULES = [
-  ["HIV / AIDS",        ["hiv","aids","prep","ist"]],
-  ["COVID-19",          ["covid"]],
-  ["Diabet",            ["sheqer","diabet","insulin","antidiabet"]],
-  ["Tuberkuloz",        ["tuberkuloz"]],
-  ["Hepatit",           ["hepatit"]],
-  ["Shëndeti Mendor",   ["depresion","ankth","suicid","skizofreni","traumat","stresit","obsesive","mendor","psikosocial"]],
-  ["Substanca & Varësi",["alkool","drog","metadon","opioide","mbidozim"]],
-  ["Obstetrikë",        ["lindje","shtatëzani","postnatal","antenatal","cezariane","hemorragji","postpartale","preeklamps"]],
-  ["Gjinekologji",      ["mitrës","prekanceroze","lezioneve"]],
-  ["Pulmologji",        ["pulmonare","astm","obstruktive"]],
-  ["Kardiologji",       ["hipertension","iskemike"]],
-  ["Nefrologji",        ["dializ","urinar"]],
-  ["Gastroenterologji", ["gastrointestinal","gjakderdhje"]],
-  ["Neurologji",        ["epilep","trunore"]],
-  ["Osteoporozë",       ["osteoporoz"]],
-  ["Stomatologji",      ["stomatolog","azot oksidul","sedacion"]],
-  ["Neonatologji",      ["neonatal"]],
-  ["Antibiotikë",       ["antibiotik"]],
-  ["Transfuzion gjaku", ["dhbgj","gjakut","transfuz"]],
-  ["Dhunë seksuale",    ["dhunës seksuale"]],
-  ["Administrativ",     ["arkivim","dokumentacion financiar","vendim"]],
-];
-function detectTopics(t){
-  const s = t.toLowerCase();
-  const out = [];
-  for(const [name,kws] of TOPIC_RULES){
-    if(kws.some(k=>s.includes(k))) out.push(name);
-  }
-  return out;
-}
+const strip = s => s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
 
 // ---- Build the document objects ----
 const DOCS = RAW.map(([title,href,date],i)=>{
   const [d,m,y] = date.split(".");
   const ext = href.toLowerCase().endsWith(".docx") ? "docx" : "pdf";
+  const type = detectType(title);
+  const specs = detectSpecs(title);
   return {
-    id:i, title, url:BASE+href, date,
-    sortKey: +(y+m+d),
-    year: y,
-    ext,
-    type: detectType(title),
-    topics: detectTopics(title),
-    search: (title+" "+date+" "+detectTopics(title).join(" ")).toLowerCase()
-            .normalize("NFD").replace(/[̀-ͯ]/g,"")
+    id:i, title, url:BASE+href, date, year:y, ext, type, specs,
+    sortKey:+(y+m+d),
+    search: strip(title+" "+date+" "+type+" "+specs.join(" "))
   };
 });
 
 // ---- State ----
-const state = { q:"", type:null, topics:new Set(), year:null, sort:"date_desc" };
+const state = { q:"", type:null, specs:new Set(), year:null, sort:"date_desc",
+                specSearch:"", specExpanded:false };
+const COLLAPSE_N = 4;
 
-// ---- Build filter chips ----
-const typeCounts={}, topicCounts={}, yearCounts={};
+// ---- Counts ----
+const typeCounts={}, specCounts={}, yearCounts={};
 DOCS.forEach(d=>{
   typeCounts[d.type]=(typeCounts[d.type]||0)+1;
-  d.topics.forEach(t=>topicCounts[t]=(topicCounts[t]||0)+1);
+  d.specs.forEach(s=>specCounts[s]=(specCounts[s]||0)+1);
   yearCounts[d.year]=(yearCounts[d.year]||0)+1;
 });
 
+// ---- Type chips (single-select) ----
 const typeWrap = document.getElementById("typeFilters");
-Object.entries(typeCounts).sort((a,b)=>b[1]-a[1]).forEach(([name,n])=>{
+TYPE_ORDER.filter(t=>typeCounts[t]).forEach(name=>{
   const c=document.createElement("div");
-  c.className="chip"; c.innerHTML=`${name} <span class="n">${n}</span>`;
+  c.className="chip"; c.innerHTML=`${name} <span class="n">${typeCounts[name]}</span>`;
   c.onclick=()=>{ state.type = state.type===name?null:name;
-    [...typeWrap.querySelectorAll(".chip")].forEach(x=>x.classList.toggle("on",x===c&&state.type===name));
+    [...typeWrap.children].forEach(x=>x.classList.toggle("on",x===c&&state.type===name));
     render(); };
   typeWrap.appendChild(c);
 });
 
-const topicWrap = document.getElementById("topicFilters");
-Object.entries(topicCounts).sort((a,b)=>b[1]-a[1]).forEach(([name,n])=>{
-  const c=document.createElement("div");
-  c.className="chip"; c.dataset.name=name; c.innerHTML=`${name} <span class="n">${n}</span>`;
-  c.onclick=()=>{ state.topics.has(name)?state.topics.delete(name):state.topics.add(name);
-    c.classList.toggle("on",state.topics.has(name)); render(); };
-  topicWrap.appendChild(c);
-});
+// ---- Specialization chips (multi-select, collapsible, searchable) ----
+const specWrap   = document.getElementById("specFilters");
+const specMore   = document.getElementById("specMore");
+const specSearch = document.getElementById("specSearch");
+const specReset  = document.getElementById("specReset");
+const specSelCount = document.getElementById("specSelCount");
+const SPEC_SORTED = Object.keys(specCounts).sort((a,b)=>
+  specCounts[b]-specCounts[a] || a.localeCompare(b,"sq"));
 
+function renderSpecChips(){
+  const q = strip(state.specSearch.trim());
+  let list = SPEC_SORTED.filter(name=> !q || strip(name).includes(q));
+  // always keep selected ones reachable
+  const searching = q.length>0;
+  let visible;
+  if(searching || state.specExpanded){
+    visible = list;
+  }else{
+    visible = list.slice(0, COLLAPSE_N);
+    [...state.specs].forEach(sel=>{ if(list.includes(sel) && !visible.includes(sel)) visible.push(sel); });
+  }
+
+  specWrap.innerHTML = visible.length
+    ? visible.map(name=>{
+        const on = state.specs.has(name) ? " on":"";
+        return `<div class="chip${on}" data-spec="${name.replace(/"/g,'&quot;')}">${name} <span class="n">${specCounts[name]}</span></div>`;
+      }).join("")
+    : `<div class="nomatch">Asnjë specializim s'u gjet.</div>`;
+
+  // "show more / less" toggle (only when not searching and there is overflow)
+  const hidden = list.length - COLLAPSE_N;
+  if(!searching && hidden>0){
+    specMore.style.display="block";
+    specMore.textContent = state.specExpanded ? "Shfaq më pak" : `Shfaq të gjitha (${list.length})`;
+  }else{
+    specMore.style.display="none";
+  }
+
+  const n = state.specs.size;
+  specSelCount.textContent = n;
+  specReset.style.display = n ? "inline":"none";
+}
+specWrap.addEventListener("click",e=>{
+  const chip = e.target.closest("[data-spec]");
+  if(!chip) return;
+  const name = chip.dataset.spec;
+  state.specs.has(name) ? state.specs.delete(name) : state.specs.add(name);
+  renderSpecChips(); render();
+});
+specSearch.addEventListener("input",()=>{ state.specSearch = specSearch.value; renderSpecChips(); });
+specMore.onclick = ()=>{ state.specExpanded = !state.specExpanded; renderSpecChips(); };
+specReset.onclick = ()=>{ state.specs.clear(); renderSpecChips(); render(); };
+
+// ---- Year chips ----
 const yearWrap = document.getElementById("years");
 Object.keys(yearCounts).sort((a,b)=>b-a).forEach(y=>{
   const c=document.createElement("div");
   c.className="yr"; c.innerHTML=`${y} <span class="n">${yearCounts[y]}</span>`;
   c.onclick=()=>{ state.year = state.year===y?null:y;
-    [...yearWrap.querySelectorAll(".yr")].forEach(x=>x.classList.toggle("on",x===c&&state.year===y));
+    [...yearWrap.children].forEach(x=>x.classList.toggle("on",x===c&&state.year===y));
     render(); };
   yearWrap.appendChild(c);
 });
 
-// ---- Search input ----
+// ---- Main search input ----
 const qEl = document.getElementById("q");
 const clearEl = document.getElementById("clear");
 qEl.addEventListener("input",()=>{
@@ -334,13 +415,12 @@ qEl.addEventListener("input",()=>{
 clearEl.onclick=()=>{ qEl.value=""; state.q=""; clearEl.style.display="none"; qEl.focus(); render(); };
 document.getElementById("sort").addEventListener("change",e=>{ state.sort=e.target.value; render(); });
 
-// ---- Highlight matches ----
+// ---- Highlight matches in title ----
 function esc(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
 function highlight(title, q){
-  if(!q) return esc(title);
-  const norm = s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
-  const nt = norm(title), nq = norm(q.trim());
+  const nq = strip(q.trim());
   if(!nq) return esc(title);
+  const nt = strip(title);
   let out="", i=0;
   while(i<title.length){
     const idx = nt.indexOf(nq, i);
@@ -354,13 +434,13 @@ function highlight(title, q){
 const calIco='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>';
 const openIco='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>';
 
-// ---- Render ----
+// ---- Render result list ----
 function render(){
-  const tokens = state.q.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().trim().split(/\s+/).filter(Boolean);
+  const tokens = strip(state.q).trim().split(/\s+/).filter(Boolean);
   let list = DOCS.filter(d=>{
     if(state.type && d.type!==state.type) return false;
     if(state.year && d.year!==state.year) return false;
-    if(state.topics.size && ![...state.topics].every(t=>d.topics.includes(t))) return false;
+    if(state.specs.size && ![...state.specs].every(s=>d.specs.includes(s))) return false;
     if(tokens.length && !tokens.every(tk=>d.search.includes(tk))) return false;
     return true;
   });
@@ -375,8 +455,8 @@ function render(){
 
   const grid=document.getElementById("grid");
   const empty=document.getElementById("empty");
-  const count=document.getElementById("count");
-  count.innerHTML = `Po shfaqen <b>${list.length}</b> nga <b>${DOCS.length}</b> dokumente`;
+  document.getElementById("count").innerHTML =
+    `Po shfaqen <b>${list.length}</b> nga <b>${DOCS.length}</b> dokumente`;
 
   if(!list.length){ grid.innerHTML=""; empty.style.display="block"; return; }
   empty.style.display="none";
@@ -393,11 +473,12 @@ function render(){
       </div>
       <div class="tags">
         <span class="tag type">${d.type}</span>
-        ${d.topics.map(t=>`<span class="tag">${t}</span>`).join("")}
+        ${d.specs.map(t=>`<span class="tag">${t}</span>`).join("")}
       </div>
     </a>`).join("");
 }
 
+renderSpecChips();
 render();
 </script>
 </body>
