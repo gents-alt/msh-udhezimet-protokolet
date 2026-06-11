@@ -303,11 +303,26 @@ function detectSpecs(t){
 
 const strip = s => s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
 
+// ---- Verified type overrides (covers opened & read one-by-one) ----
+// These older titles carry no prefix but their cover page prints
+// "UDHËRRËFYES KLINIK". Keyed by the unique numeric id in the file name.
+const OVERRIDE_UDHER = new Set([
+  "46787584.2312","46495245.562","46146825.7972","46019544.7593","45905409.0477",
+  "45812721.4552","45663126.2898","45572941.1968","45370002.8259","41606200.4204",
+  "41487085.8149","41404938.7077","41266873.7919","41125761.4307","40718461.6423",
+  "40519089.3729","40374888.0385","40248446.1821","40068690.6739","39857639.78"
+]);
+function isOverrideUdher(href){
+  for(const id of OVERRIDE_UDHER){ if(href.endsWith(id+".pdf")) return true; }
+  return false;
+}
+
 // ---- Build the document objects ----
 const DOCS = RAW.map(([title,href,date],i)=>{
   const [d,m,y] = date.split(".");
   const ext = href.toLowerCase().endsWith(".docx") ? "docx" : "pdf";
-  const type = detectType(title);
+  let type = detectType(title);
+  if(isOverrideUdher(href)) type = "Udhërrëfyes Klinik";
   const specs = detectSpecs(title);
   return {
     id:i, title, url:BASE+href, date, year:y, ext, type, specs,
